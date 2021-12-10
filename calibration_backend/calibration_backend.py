@@ -49,8 +49,8 @@ stub_questions = [
         "id": 7,
         "question": "Самое глубокое место на Земле находится в Тихом океане",
         "topic": "science",
-        "answer": False,
-        "comment": "",
+        "answer": True,
+        "comment": "Марианская впадина находится на западе Тихого океана",
     },
     {
         "id": 8,

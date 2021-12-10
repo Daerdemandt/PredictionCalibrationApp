@@ -24,6 +24,26 @@ const StyledButtonLarge = styled(StyledButton)`
   padding: 20px;
 `;
 
+const StyledItem = styled.div`
+  display: flex;
+  align-items: center;
+  padding-bottom: 5px;
+`;
+
+const StyledColumn = styled.span`
+  padding: 0 5px;
+  white-space: nowrap;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+
+  a {
+    color: inherit;
+  }
+
+  width: ${(props) => props.width};
+`;
+
 const getBlankAnswer = () => ({
   ynq_id: -1,
   user_id: -1,
@@ -42,6 +62,13 @@ const Answer = {
 };
 Object.freeze(Answer);
 
+const answerToString = (answer) => {
+  if (answer === 0 || answer === false) return "Нет";
+  else if (answer === 1 || answer === true) return "Да";
+  else if (answer === 2) return "Не знаю";
+  throw new Error(`Unknown answer ${answer}`);
+};
+
 const questionReducer = (state, action) => {
   switch (action.type) {
     case "ADD":
@@ -50,15 +77,24 @@ const questionReducer = (state, action) => {
         loading: false,
         error: false,
         questions: state.questions.concat(action.payload.questions),
-        has_more: action.payload.has_more,
+        hasMore: action.payload.hasMore,
       };
     case "NEXT":
+      let newAnswered =
+        state.answeredQuestions.length > 10
+          ? state.answeredQuestions.slice(0, -1)
+          : Object.assign([], state.answeredQuestions);
+      newAnswered = [
+        {
+          userAnswer: action.payload,
+          ...state.questions[state.questions.length - 1],
+        },
+        ...newAnswered,
+      ];
       return {
         ...state,
         questions: state.questions.slice(0, -1),
-        answered_questions: state.answered_questions.concat([
-          state.answered_questions[state.answered_questions.length - 1],
-        ]),
+        answeredQuestions: newAnswered,
       };
     case "ERROR":
       return {
@@ -148,11 +184,51 @@ function DontKnowConfirmButton({ confirmDontKnow }) {
   );
 }
 
+function AnsweredQuestionHistory({ answeredQuestions }) {
+  if (answeredQuestions.length === 0)
+    return (
+      <div>
+        <p>Пока что вы ещё не ответили ни на один вопрос</p>
+      </div>
+    );
+  return (
+    <div>
+      <StyledItem>
+        <StyledColumn width="30%">
+          <strong>Вопрос</strong>
+        </StyledColumn>
+        <StyledColumn width="15%">
+          <strong>Ваш ответ</strong>
+        </StyledColumn>
+        <StyledColumn width="15%">
+          <strong>На самом деле</strong>
+        </StyledColumn>
+        <StyledColumn width="30%">
+          <strong>Комментарий</strong>
+        </StyledColumn>
+      </StyledItem>
+      {answeredQuestions.map((question) => (
+        <StyledItem key={question.id}>
+          <StyledColumn width="30%">{question.question}</StyledColumn>
+          <StyledColumn width="15%">
+            {answerToString(question.userAnswer)}
+          </StyledColumn>
+          <StyledColumn width="15%">
+            {answerToString(question.answer)}
+          </StyledColumn>
+          <StyledColumn width="30%">{question.comment}</StyledColumn>
+        </StyledItem>
+      ))}
+    </div>
+  );
+}
+
 // ---
 
 export function QuestionsPage({ topic }) {
   const [showProbs, setShowProbs] = React.useState(false);
   const [showDontKnowConfirm, setShowDontKnowConfirm] = React.useState(false);
+  const [showAnswered, setShowAnswered] = React.useState(false);
 
   const [questionsData, dispatchQuestionsData] = React.useReducer(
     questionReducer,
@@ -160,8 +236,8 @@ export function QuestionsPage({ topic }) {
       loading: true,
       error: false,
       questions: [],
-      answered_questions: [],
-      has_more: true,
+      answeredQuestions: [],
+      hasMore: true,
     }
   );
 
@@ -172,7 +248,7 @@ export function QuestionsPage({ topic }) {
         type: "ADD",
         payload: {
           questions: result.data.questions,
-          has_more: result.data.has_more,
+          hasMore: result.data.hasMore,
         },
       });
     } catch (error) {
@@ -192,7 +268,7 @@ export function QuestionsPage({ topic }) {
     if (currentAnswer.confirmed) {
       let { confirmed, ...postData } = currentAnswer;
       axios.post("/answer_question", postData); // ignore promise for now
-      dispatchQuestionsData({ type: "NEXT" });
+      dispatchQuestionsData({ type: "NEXT", payload: currentAnswer.answer });
       dispatchAnswer({ type: "RESET" });
       setShowProbs(false);
       setShowDontKnowConfirm(false);
@@ -246,6 +322,16 @@ export function QuestionsPage({ topic }) {
             confirmDontKnow={() => dispatchAnswer({ type: "CONFIRM" })}
           />
         )}
+        <hr />
+        <StyledButtonLarge onClick={() => setShowAnswered(!showAnswered)}>
+          Показать историю ответов
+        </StyledButtonLarge>
+        {showAnswered && (
+          <AnsweredQuestionHistory
+            answeredQuestions={questionsData.answeredQuestions}
+          />
+        )}
+        <hr />
       </main>
       <nav>
         <Link to="/">Назад</Link>
