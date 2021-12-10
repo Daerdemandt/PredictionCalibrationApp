@@ -84,8 +84,9 @@ def get_questions():
 
 @app.route("/answer_question", methods=['POST'])
 def answer_question():
-    data = request.form
+    data = request.get_json()
     print(data)
+    return "OK"
 
 
 if __name__ == "__main__":
