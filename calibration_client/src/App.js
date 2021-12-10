@@ -1,8 +1,7 @@
-import axios from "axios";
 import React from "react";
 import { Routes, Route, Link } from "react-router-dom";
 import { About } from "./About";
-import { QuestionsPage } from "./QuestionsPage";
+import { QuestionsPage } from "./QuestionsPage/QuestionsPage";
 import "./App.css";
 
 function Home() {
