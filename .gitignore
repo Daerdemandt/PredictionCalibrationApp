@@ -1,0 +1,27 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+calibration_client/node_modules
+calibration_client/.pnp
+calibration_client/.pnp.js
+
+# testing
+calibration_client/coverage
+
+# production
+calibration_client/build
+
+# misc
+calibration_client/.DS_Store
+calibration_client/.env.local
+calibration_client/.env.development.local
+calibration_client/.env.test.local
+calibration_client/.env.production.local
+
+calibration_client/npm-debug.log*
+calibration_client/yarn-debug.log*
+calibration_client/yarn-error.log*
+
+calibration_backend/.idea
+calibration_backend/venv
+*.pyc
