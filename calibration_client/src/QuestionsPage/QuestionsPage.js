@@ -7,6 +7,7 @@ import {
   ProbabilityButtonArray,
   DontKnowConfirmButton,
   NDYButtonArray,
+  MainPlaque,
 } from "./QuestionsPageSubcomponents";
 import { StyledButtonLarge } from "./QuestionsPageStyle";
 
@@ -27,6 +28,7 @@ const questionReducer = (state, action) => {
         error: false,
         questions: state.questions.concat(action.payload.questions),
         hasMore: action.payload.hasMore,
+        nextPage: state.nextPage + 1,
       };
     case "NEXT":
       let newAnswered =
@@ -97,23 +99,27 @@ export function QuestionsPage({ topic }) {
       questions: [],
       answeredQuestions: [],
       hasMore: true,
+      nextPage: 0,
     }
   );
 
   const requestQuestions = React.useCallback(async () => {
-    try {
-      const result = await axios.get("/get_questions");
-      dispatchQuestionsData({
-        type: "ADD",
-        payload: {
-          questions: result.data.questions,
-          hasMore: result.data.hasMore,
-        },
-      });
-    } catch (error) {
-      dispatchQuestionsData({ type: "ERROR" });
+    if (questionsData.questions.length <= 1 && questionsData.hasMore) {
+      try {
+        let url = `/get_questions?page=${questionsData.nextPage}`;
+        const result = await axios.get(url);
+        dispatchQuestionsData({
+          type: "ADD",
+          payload: {
+            questions: result.data.questions,
+            hasMore: result.data.has_more,
+          },
+        });
+      } catch (error) {
+        dispatchQuestionsData({ type: "ERROR" });
+      }
     }
-  }, []);
+  }, [questionsData]);
   React.useEffect(() => {
     requestQuestions();
   }, [requestQuestions]);
@@ -138,36 +144,33 @@ export function QuestionsPage({ topic }) {
     <>
       <main>
         <h3>Тема: {topic}</h3>
-        {questionsData.questions.length !== 0 && (
-          <h1>
-            {
-              questionsData.questions[questionsData.questions.length - 1]
-                .question
-            }
-          </h1>
-        )}
-        {questionsData.loading && <p>Загрузка...</p>}
-        {questionsData.error && <p>Ошибка при загрузке вопросов</p>}
-        <NDYButtonArray
-          onAnswer={(answer) => {
-            switch (answer) {
-              case Answer.NO:
-                dispatchAnswer({ type: "SET_YN", payload: Answer.NO });
-                setShowProbs(true);
-                break;
-              case Answer.YES:
-                dispatchAnswer({ type: "SET_YN", payload: Answer.YES });
-                setShowProbs(true);
-                break;
-              case Answer.DONTKNOW:
-                dispatchAnswer({ type: "SET_YN", payload: Answer.DONTKNOW });
-                setShowDontKnowConfirm(true);
-                break;
-              default:
-                throw new Error();
-            }
-          }}
+        <MainPlaque
+          questions={questionsData.questions}
+          hasMore={questionsData.hasMore}
+          error={questionsData.error}
         />
+        {questionsData.questions.length > 0 && (
+          <NDYButtonArray
+            onAnswer={(answer) => {
+              switch (answer) {
+                case Answer.NO:
+                  dispatchAnswer({ type: "SET_YN", payload: Answer.NO });
+                  setShowProbs(true);
+                  break;
+                case Answer.YES:
+                  dispatchAnswer({ type: "SET_YN", payload: Answer.YES });
+                  setShowProbs(true);
+                  break;
+                case Answer.DONTKNOW:
+                  dispatchAnswer({ type: "SET_YN", payload: Answer.DONTKNOW });
+                  setShowDontKnowConfirm(true);
+                  break;
+                default:
+                  throw new Error();
+              }
+            }}
+          />
+        )}
         {showProbs && (
           <ProbabilityButtonArray
             onProbabilitySelected={(prob) => {

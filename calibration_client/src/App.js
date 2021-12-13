@@ -22,7 +22,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="about" element={<About />} />
-        <Route path="questions" element={<QuestionsPage topic={"any"} />} />
+        <Route path="questions" element={<QuestionsPage topic={"любая"} />} />
       </Routes>
     </div>
   );

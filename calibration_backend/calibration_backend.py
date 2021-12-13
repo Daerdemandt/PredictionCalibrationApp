@@ -74,12 +74,42 @@ stub_questions = [
         "answer": True,
         "comment": "",
     },
+    {
+        "id": 11,
+        "question": "Во время солнечного затмения Луна находится между Солнцем и Землёй примерно на одной прямой",
+        "topic": "science",
+        "answer": True,
+        "comment": "",
+    },
+    {
+        "id": 12,
+        "question": "Закон Мура гласит, что количество резисторов в вычислительных схемах каждые два года уменьшается в два раза",
+        "topic": "science",
+        "answer": False,
+        "comment": "Закон Мура гласит, что количество транзисторов в интегральных схемах удваивается каждые два года",
+    },
+    {
+        "id": 13,
+        "question": "У типичного человека 23 пары хромосом",
+        "topic": "science",
+        "answer": True,
+        "comment": "Всё верно, 22 пары аутосом и пара половых хромосом X и Y",
+    },
 ]
+
+
+PAGE_SIZE = 5
 
 
 @app.route("/get_questions", methods=['GET'])
 def get_questions():
-    return {"questions": stub_questions, "page": 1, "has_more": False}
+    page = int(request.args.get("page"))
+    questions = stub_questions[page * PAGE_SIZE: (page + 1) * PAGE_SIZE]
+    return {
+        "questions": questions,
+        "page": page,
+        "has_more": (page + 1) * PAGE_SIZE < len(stub_questions)
+    }
 
 
 @app.route("/answer_question", methods=['POST'])
