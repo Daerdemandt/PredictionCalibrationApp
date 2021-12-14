@@ -1,10 +1,6 @@
 import React from "react";
-import {
-  StyledItem,
-  StyledColumn,
-  StyledButtonSmall,
-  StyledButtonLarge,
-} from "./QuestionsPageStyle";
+import { StyledItem, StyledColumn } from "./QuestionsPageStyle";
+import { StyledButtonSmall, StyledButtonLarge } from "../shared/SharedStyle";
 
 export const Answer = {
   INVALID: -1,

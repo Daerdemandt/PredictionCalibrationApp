@@ -9,7 +9,7 @@ import {
   NDYButtonArray,
   MainPlaque,
 } from "./QuestionsPageSubcomponents";
-import { StyledButtonLarge } from "./QuestionsPageStyle";
+import { StyledButtonLarge } from "../shared/SharedStyle";
 
 const getBlankAnswer = () => ({
   ynq_id: -1,
