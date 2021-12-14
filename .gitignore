@@ -22,6 +22,7 @@ calibration_client/npm-debug.log*
 calibration_client/yarn-debug.log*
 calibration_client/yarn-error.log*
 
+calibration_backend/data.db
 calibration_backend/.idea
 calibration_backend/venv
 *.pyc

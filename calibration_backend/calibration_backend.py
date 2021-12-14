@@ -1,6 +1,66 @@
 from flask import Flask, request
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import relationship
 
 app = Flask(__name__)
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///data.db"
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+db = SQLAlchemy(app)
+
+
+class User(db.Model):
+    __tablename__ = "users"
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True, nullable=False)
+    name = db.Column(db.String(64), nullable=False)
+
+    def __repr__(self):
+        return f"<User {self.id}>"
+
+
+class YNQuestion(db.Model):
+    __tablename__ = "yn_questions"
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    question = db.Column(db.String(256), nullable=False)
+    topic = db.Column(db.String(32), nullable=False)
+    answer_question = db.Column(db.Boolean(), nullable=False)
+    comment = db.Column(db.String(256), default="")
+
+    def __repr__(self):
+        return f"<Question {self.id}>"
+
+
+class YNAnswer(db.Model):
+    __tablename__ = "yn_answers"
+
+    user_id = db.Column(db.Integer, ForeignKey('users.id'),
+                        primary_key=True, nullable=False)
+    ynq_id = db.Column(db.Integer, ForeignKey('yn_questions.id'),
+                       primary_key=True, nullable=False)
+    answer = db.Column(db.Integer, nullable=False)
+    probability = db.Column(db.Integer, nullable=False)
+
+    user = relationship("User")
+    yn_question = relationship("YNQuestion")
+
+    def __repr__(self):
+        return f"<Answer {self.user_id}, {self.question_id}, {self.answer}>"
+
+
+class Prediction(db.Model):
+    __tablename__ = "predictions"
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True, nullable=False)
+    user_id = db.Column(db.Integer, ForeignKey('users.id'), nullable=False)
+    prediction = db.Column(db.Text, nullable=False)
+    terminal_date = db.Column(db.DateTime, nullable=False)
+    result = db.Column(db.Integer)
+
+    def __repr__(self):
+        return f"<Answer {self.user_id}, {self.question_id}, {self.answer}>"
+
 
 stub_questions = [
     {
@@ -116,6 +176,14 @@ def get_questions():
 def answer_question():
     data = request.get_json()
     print(data)
+    answer = YNAnswer(
+        user_id=data["user_id"], ynq_id=data["ynq_id"],
+        answer=data["answer"], probability=data["probability"])
+    try:
+        db.session.add(answer)
+        db.session.commit()
+    except Exception as e:
+        return f"Error: {str(e)}"
     return "OK"
 
 
