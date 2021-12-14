@@ -27,8 +27,9 @@ export function NewUserInput({ onUserCreated }) {
 
   let createNewUser = () => {
     const postData = { name: name };
-    let _unused = axios.post("/create_user", postData);
     // Ignore errors right now
+    // eslint-disable-next-line no-unused-vars
+    let _unused = axios.post("/create_user", postData);
     onUserCreated();
   };
 

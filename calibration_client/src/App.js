@@ -8,7 +8,22 @@ import "./App.css";
 import { NewUserInput } from "./NewUserInput";
 import axios from "axios";
 
+const useSemiPersistentInt = (key, initialValue) => {
+  const [value, setValue] = React.useState(
+    Number(localStorage.getItem(key)) || initialValue
+  );
+  React.useEffect(() => {
+    localStorage.setItem(key, Number(value));
+  }, [value, key]);
+  return [value, setValue];
+};
+
 function Home() {
+  const [selectedUserId, setSelectedUserId] = useSemiPersistentInt(
+    "selectedUserId",
+    -1
+  );
+
   const [usersData, setUsersData] = React.useState({
     users: [],
     loading: true,
@@ -19,6 +34,13 @@ function Home() {
     try {
       let url = `/get_users`;
       const result = await axios.get(url);
+      const users = result.data.users;
+      if (users.length !== 0) {
+        const cant_find_selected_user = !users.find(
+          (e) => e.id === selectedUserId
+        );
+        if (cant_find_selected_user) setSelectedUserId(users[0].id);
+      }
       setUsersData({
         users: result.data.users,
         loading: false,
@@ -32,10 +54,12 @@ function Home() {
         error: error,
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [usersData.loading]);
   React.useEffect(() => {
     requestUsers();
   }, [requestUsers]);
+
   const refreshUserlist = () =>
     setUsersData({
       ...usersData,
@@ -55,6 +79,7 @@ function Home() {
       </>
     );
   } else {
+    const selectedUser = usersData.users.find((e) => e.id === selectedUserId);
     return (
       <main>
         <div style={{ paddingBottom: "5px" }}>
@@ -83,6 +108,11 @@ function Home() {
             Помощь
           </StyledButtonLarge>
         </div>
+        {selectedUserId > -1 && (
+          <div style={{ paddingBottom: "5px" }}>
+            Выбранный пользователь: {selectedUser.name}
+          </div>
+        )}
       </main>
     );
   }
