@@ -5,6 +5,7 @@ import { About } from "./About";
 import { QuestionsPage } from "./QuestionsPage/QuestionsPage";
 import { StyledButtonLarge } from "./shared/SharedStyle";
 import "./App.css";
+import { NewUserInput } from "./NewUserInput";
 
 function Home() {
   const navigate = useNavigate();
@@ -14,6 +15,11 @@ function Home() {
       <div style={{ paddingBottom: "5px" }}>
         <StyledButtonLarge onClick={() => navigate("/questions")}>
           Отвечать на вопросы
+        </StyledButtonLarge>
+      </div>
+      <div style={{ paddingBottom: "5px" }}>
+        <StyledButtonLarge onClick={() => navigate("/create_user")}>
+          Создать нового пользователя
         </StyledButtonLarge>
       </div>
       <div style={{ paddingBottom: "5px" }}>
@@ -31,6 +37,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/questions" element={<QuestionsPage topic="любая" />} />
+        <Route path="/create_user" element={<NewUserInput />} />
         <Route path="/about" element={<About />} />
       </Routes>
     </div>

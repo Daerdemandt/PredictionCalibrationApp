@@ -172,9 +172,30 @@ def get_questions():
     }
 
 
+@app.route("/get_users", methods=['GET'])
+def get_users():
+    users = User.query.all()
+    return {"users": [{"id": u.id, "name": u.name} for u in users]}
+
+
+@app.route("/create_user", methods=['POST'])
+def create_user():
+    data = request.get_json()
+    print("create_user")
+    print(data)
+    new_user = User(name=data["name"])
+    try:
+        db.session.add(new_user)
+        db.session.commit()
+    except Exception as e:
+        return f"Error: {str(e)}"
+    return "OK"
+
+
 @app.route("/answer_question", methods=['POST'])
 def answer_question():
     data = request.get_json()
+    print("answer_question")
     print(data)
     answer = YNAnswer(
         user_id=data["user_id"], ynq_id=data["ynq_id"],
