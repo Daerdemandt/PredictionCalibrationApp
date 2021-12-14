@@ -12,13 +12,11 @@ const StyledInput = styled.input`
 `;
 
 const StyledLabel = styled.label`
-  border-top: 1px solid #171212;
-  border-left: 1px solid #171212;
   padding-left: 5px;
   font-size: 24px;
 `;
 
-export function NewUserInput() {
+export function NewUserInput({ onUserCreated }) {
   const [inputOk, setInputOk] = React.useState(false);
   const [name, setName] = React.useState("");
 
@@ -29,24 +27,27 @@ export function NewUserInput() {
 
   let createNewUser = () => {
     const postData = { name: name };
-    axios.post("/create_user", postData);
+    let _unused = axios.post("/create_user", postData);
     // Ignore errors right now
+    onUserCreated();
   };
 
   return (
-    <div>
-      <StyledLabel htmlFor="newUserName">Имя:</StyledLabel>
-      &nbsp;
-      <StyledInput
-        id="newUserName"
-        type="text"
-        value={name}
-        onChange={validateInput}
-      />
-      &nbsp;
-      <StyledButtonSmall disabled={!inputOk} onClick={createNewUser}>
-        Создать
-      </StyledButtonSmall>
-    </div>
+    <>
+      <div>
+        <StyledLabel htmlFor="newUserName">Имя:</StyledLabel>
+        &nbsp;
+        <StyledInput
+          id="newUserName"
+          type="text"
+          value={name}
+          onChange={validateInput}
+        />
+        &nbsp;
+        <StyledButtonSmall disabled={!inputOk} onClick={createNewUser}>
+          Создать
+        </StyledButtonSmall>
+      </div>
+    </>
   );
 }
