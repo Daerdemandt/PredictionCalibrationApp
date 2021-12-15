@@ -181,22 +181,30 @@ def get_users():
 @app.route("/create_user", methods=['POST'])
 def create_user():
     data = request.get_json()
-    print("create_user")
-    print(data)
     new_user = User(name=data["name"])
     try:
         db.session.add(new_user)
         db.session.commit()
     except Exception as e:
         return f"Error: {str(e)}"
-    return "OK"
+    return get_users()
+
+
+@app.route("/delete_user", methods=['DELETE'])
+def delete_user():
+    user_id = int(request.args.get("id"))
+    user = User.query.filter_by(id=user_id).one()
+    try:
+        db.session.delete(user)
+        db.session.commit()
+    except Exception as e:
+        return f"Error: {str(e)}"
+    return get_users()
 
 
 @app.route("/answer_question", methods=['POST'])
 def answer_question():
     data = request.get_json()
-    print("answer_question")
-    print(data)
     answer = YNAnswer(
         user_id=data["user_id"], ynq_id=data["ynq_id"],
         answer=data["answer"], probability=data["probability"])

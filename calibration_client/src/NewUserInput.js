@@ -1,7 +1,6 @@
 import React from "react";
 import { StyledButtonSmall } from "./shared/SharedStyle";
 import styled from "styled-components";
-import axios from "axios";
 
 const StyledInput = styled.input`
   border: none;
@@ -16,21 +15,13 @@ const StyledLabel = styled.label`
   font-size: 24px;
 `;
 
-export function NewUserInput({ onUserCreated }) {
+export function NewUserInput({ createNewUser }) {
   const [inputOk, setInputOk] = React.useState(false);
   const [name, setName] = React.useState("");
 
-  let validateInput = (event) => {
+  const validateInput = (event) => {
     setInputOk(event.target.value !== "");
     setName(event.target.value);
-  };
-
-  let createNewUser = () => {
-    const postData = { name: name };
-    // Ignore errors right now
-    // eslint-disable-next-line no-unused-vars
-    let _unused = axios.post("/create_user", postData);
-    onUserCreated();
   };
 
   return (
@@ -45,7 +36,10 @@ export function NewUserInput({ onUserCreated }) {
           onChange={validateInput}
         />
         &nbsp;
-        <StyledButtonSmall disabled={!inputOk} onClick={createNewUser}>
+        <StyledButtonSmall
+          disabled={!inputOk}
+          onClick={() => createNewUser(name)}
+        >
           Создать
         </StyledButtonSmall>
       </div>

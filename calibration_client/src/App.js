@@ -33,7 +33,6 @@ function Home() {
     error: null,
   });
   const requestUsers = React.useCallback(async () => {
-    if (!usersData.loading) return;
     try {
       let url = `/get_users`;
       const result = await axios.get(url);
@@ -58,27 +57,35 @@ function Home() {
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [usersData.loading]);
+  }, []);
   React.useEffect(() => {
     requestUsers();
   }, [requestUsers]);
 
-  const refreshUserlist = () =>
-    setUsersData({
-      ...usersData,
-      loading: true,
-    });
-
   const [showNewUser, setShowNewUser] = React.useState(false);
   const [showConfirmDelete, setShowConfirmDelete] = React.useState(false);
 
-  function deleteUserConfirmResult(isConfirmed) {
+  async function createNewUser(newUsername) {
+    const postData = { name: newUsername };
+    // Ignore errors right now
+    // eslint-disable-next-line no-unused-vars
+    let result = await axios.post("/create_user", postData);
+    setUsersData({
+      ...usersData,
+      users: result.data.users,
+    });
+  }
+
+  async function deleteUserConfirmResult(isConfirmed) {
     setShowConfirmDelete(false);
     if (!isConfirmed) return;
     // Ignore errors right now
     // eslint-disable-next-line no-unused-vars
-    let _unused = axios.post(`/delete_user?id=${selectedUserId}`);
-    refreshUserlist();
+    let result = await axios.delete(`/delete_user?id=${selectedUserId}`);
+    setUsersData({
+      ...usersData,
+      users: result.data.users,
+    });
   }
 
   const navigate = useNavigate();
@@ -88,7 +95,7 @@ function Home() {
     return (
       <>
         <h2>Пока что нет пользователей, зарегистрируйтесь</h2>
-        <NewUserInput onUserCreated={() => refreshUserlist()} />
+        <NewUserInput createNewUser={createNewUser} />
       </>
     );
   } else {
@@ -116,9 +123,7 @@ function Home() {
         {showNewUser && (
           <div>
             <hr />
-            <NewUserInput
-              onUserCreated={() => refreshUserlist() /* Just in case */}
-            />
+            <NewUserInput createNewUser={createNewUser} />
             <hr />
           </div>
         )}
