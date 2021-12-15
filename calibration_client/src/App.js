@@ -9,6 +9,7 @@ import { NewUserInput } from "./NewUserInput";
 import axios from "axios";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
+import ConfirmDialog from "./shared/ConfirmDialog";
 
 const useSemiPersistentInt = (key, initialValue) => {
   const [value, setValue] = React.useState(
@@ -38,10 +39,10 @@ function Home() {
       const result = await axios.get(url);
       const users = result.data.users;
       if (users.length !== 0) {
-        const cant_find_selected_user = !users.find(
+        const cantFindSelectedUser = !users.find(
           (e) => e.id === selectedUserId
         );
-        if (cant_find_selected_user) setSelectedUserId(users[0].id);
+        if (cantFindSelectedUser) setSelectedUserId(users[0].id);
       }
       setUsersData({
         users: result.data.users,
@@ -69,6 +70,16 @@ function Home() {
     });
 
   const [showNewUser, setShowNewUser] = React.useState(false);
+  const [showConfirmDelete, setShowConfirmDelete] = React.useState(false);
+
+  function deleteUserConfirmResult(isConfirmed) {
+    setShowConfirmDelete(false);
+    if (!isConfirmed) return;
+    // Ignore errors right now
+    // eslint-disable-next-line no-unused-vars
+    let _unused = axios.post(`/delete_user?id=${selectedUserId}`);
+    refreshUserlist();
+  }
 
   const navigate = useNavigate();
   if (usersData.error != null) return <h1>Ошибка: {usersData.error}</h1>;
@@ -111,6 +122,11 @@ function Home() {
             <hr />
           </div>
         )}
+        <div style={{ paddingBottom: "5px" }}>
+          <StyledButtonLarge onClick={() => setShowConfirmDelete(true)}>
+            Удалить текущего пользователя
+          </StyledButtonLarge>
+        </div>
         <div
           style={{
             marginLeft: "33%",
@@ -140,6 +156,12 @@ function Home() {
             )}
           />
         </div>
+        <ConfirmDialog
+          title={`Удалить пользователя ${selectedUser.name}?`}
+          message="Будет удалена вся статистика и предсказания этого пользователя"
+          open={showConfirmDelete}
+          onClose={deleteUserConfirmResult}
+        />
       </main>
     );
   }
