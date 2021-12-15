@@ -59,6 +59,7 @@ function Home() {
     );
     if (cantFindSelectedUser) setSelectedUserId(usersData.users[0].id);
   }
+  const selectedUser = usersData.users.find((e) => e.id === selectedUserId);
 
   const [showUserCreatedAlert, setShowUserCreatedAlert] = React.useState(false);
   async function createNewUser(newUsername) {
@@ -95,7 +96,11 @@ function Home() {
     return (
       <main>
         <div style={{ paddingBottom: "5px" }}>
-          <StyledButtonLarge onClick={() => navigate("/questions")}>
+          <StyledButtonLarge
+            onClick={() =>
+              navigate("/questions", { state: { user: selectedUser } })
+            }
+          >
             Отвечать на вопросы
           </StyledButtonLarge>
         </div>

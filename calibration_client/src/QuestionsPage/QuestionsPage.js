@@ -1,6 +1,6 @@
 import React from "react";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import {
   Answer,
   AnsweredQuestionHistory,
@@ -11,9 +11,9 @@ import {
 } from "./QuestionsPageSubcomponents";
 import { StyledButtonLarge } from "../shared/SharedStyle";
 
-const getBlankAnswer = () => ({
+const getBlankAnswer = (userId) => ({
   ynq_id: -1,
-  user_id: -1,
+  user_id: userId,
   answer: null,
   probability: -1,
   confirmed: false,
@@ -58,35 +58,44 @@ const questionReducer = (state, action) => {
   }
 };
 
-const answerReducer = (state, action) => {
-  switch (action.type) {
-    case "RESET":
-      return getBlankAnswer();
-    case "SET_YN":
-      return {
-        ...state,
-        answer: action.payload,
-      };
-    case "SET_PROBABILITY":
-      return {
-        ...state,
-        probability: action.payload,
-      };
-    case "CONFIRM":
-      return {
-        ...state,
-        confirmed: true,
-      };
-    default:
-      throw new Error();
-  }
-};
+function getAnswerReducer(userId) {
+  return (state, action) => {
+    switch (action.type) {
+      case "RESET":
+        return getBlankAnswer(userId);
+      case "SET_YN":
+        return {
+          ...state,
+          answer: action.payload,
+        };
+      case "SET_PROBABILITY":
+        return {
+          ...state,
+          probability: action.payload,
+        };
+      case "CONFIRM":
+        return {
+          ...state,
+          confirmed: true,
+        };
+      default:
+        throw new Error();
+    }
+  };
+}
 
 // ---
 
 // ---
 
 export function QuestionsPage({ topic }) {
+  const location = useLocation();
+  const user = location.state.user;
+  if (user == null || user.id == null || user.name == null) {
+    console.log(user);
+    throw new ReferenceError("Malformed user");
+  }
+
   const [showProbs, setShowProbs] = React.useState(false);
   const [showDontKnowConfirm, setShowDontKnowConfirm] = React.useState(false);
   const [showAnswered, setShowAnswered] = React.useState(false);
@@ -125,8 +134,8 @@ export function QuestionsPage({ topic }) {
   }, [requestQuestions]);
 
   const [currentAnswer, dispatchAnswer] = React.useReducer(
-    answerReducer,
-    getBlankAnswer()
+    getAnswerReducer(user.id),
+    getBlankAnswer(user.id)
   );
 
   React.useEffect(() => {
@@ -144,6 +153,7 @@ export function QuestionsPage({ topic }) {
     <>
       <main>
         <h3>Тема: {topic}</h3>
+        <h3>Пользователь: {user.name}</h3>
         <MainPlaque
           questions={questionsData.questions}
           hasMore={questionsData.hasMore}
