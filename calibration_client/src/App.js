@@ -5,11 +5,8 @@ import { About } from "./About";
 import { QuestionsPage } from "./QuestionsPage/QuestionsPage";
 import { StyledButtonLarge } from "./shared/SharedStyle";
 import "./App.css";
-import { NewUserInput } from "./NewUserInput";
+import { NewUserInput, UserManagementPane } from "./UserManagementPane";
 import axios from "axios";
-import TextField from "@material-ui/core/TextField";
-import Autocomplete from "@material-ui/lab/Autocomplete";
-import ConfirmDialog from "./shared/ConfirmDialog";
 
 const useSemiPersistentInt = (key, initialValue) => {
   const [value, setValue] = React.useState(
@@ -36,13 +33,6 @@ function Home() {
     try {
       let url = `/get_users`;
       const result = await axios.get(url);
-      const users = result.data.users;
-      if (users.length !== 0) {
-        const cantFindSelectedUser = !users.find(
-          (e) => e.id === selectedUserId
-        );
-        if (cantFindSelectedUser) setSelectedUserId(users[0].id);
-      }
       setUsersData({
         users: result.data.users,
         loading: false,
@@ -62,13 +52,16 @@ function Home() {
     requestUsers();
   }, [requestUsers]);
 
-  const [showNewUser, setShowNewUser] = React.useState(false);
-  const [showConfirmDelete, setShowConfirmDelete] = React.useState(false);
+  if (usersData.users.length !== 0) {
+    const cantFindSelectedUser = !usersData.users.find(
+      (e) => e.id === selectedUserId
+    );
+    if (cantFindSelectedUser) setSelectedUserId(usersData.users[0].id);
+  }
 
   async function createNewUser(newUsername) {
     const postData = { name: newUsername };
     // Ignore errors right now
-    // eslint-disable-next-line no-unused-vars
     let result = await axios.post("/create_user", postData);
     setUsersData({
       ...usersData,
@@ -76,11 +69,8 @@ function Home() {
     });
   }
 
-  async function deleteUserConfirmResult(isConfirmed) {
-    setShowConfirmDelete(false);
-    if (!isConfirmed) return;
+  async function deleteUser() {
     // Ignore errors right now
-    // eslint-disable-next-line no-unused-vars
     let result = await axios.delete(`/delete_user?id=${selectedUserId}`);
     setUsersData({
       ...usersData,
@@ -99,8 +89,6 @@ function Home() {
       </>
     );
   } else {
-    const selectedUser = usersData.users.find((e) => e.id === selectedUserId);
-    const userNames = usersData.users.map((u) => u.name);
     return (
       <main>
         <div style={{ paddingBottom: "5px" }}>
@@ -113,59 +101,12 @@ function Home() {
             Помощь
           </StyledButtonLarge>
         </div>
-        <div style={{ paddingBottom: "5px" }}>
-          <StyledButtonLarge onClick={() => setShowNewUser(!showNewUser)}>
-            {showNewUser
-              ? "Скрыть создание пользователя"
-              : "Создать нового пользователя"}
-          </StyledButtonLarge>
-        </div>
-        {showNewUser && (
-          <div>
-            <hr />
-            <NewUserInput createNewUser={createNewUser} />
-            <hr />
-          </div>
-        )}
-        <div style={{ paddingBottom: "5px" }}>
-          <StyledButtonLarge onClick={() => setShowConfirmDelete(true)}>
-            Удалить текущего пользователя
-          </StyledButtonLarge>
-        </div>
-        <div
-          style={{
-            marginLeft: "33%",
-            paddingTop: "10px",
-            paddingBottom: "5px",
-          }}
-        >
-          <Autocomplete
-            disableClearable
-            options={userNames}
-            value={selectedUser.name}
-            style={{ width: "50%" }}
-            onChange={(event, newValue) => {
-              const newUser = usersData.users.find((e) => e.name === newValue);
-              if (newUser == null)
-                throw new Error(
-                  `Can not select user ${newUser.name}: not in users list`
-                );
-              setSelectedUserId(newUser.id);
-            }}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label="Выбранный пользователь"
-                variant="outlined"
-              />
-            )}
-          />
-        </div>
-        <ConfirmDialog
-          title={`Удалить пользователя ${selectedUser.name}?`}
-          message="Будет удалена вся статистика и предсказания этого пользователя"
-          open={showConfirmDelete}
-          onClose={deleteUserConfirmResult}
+        <UserManagementPane
+          allUsers={usersData.users}
+          selectedUserId={selectedUserId}
+          setSelectedUserId={setSelectedUserId}
+          createNewUser={createNewUser}
+          deleteUser={deleteUser}
         />
       </main>
     );
