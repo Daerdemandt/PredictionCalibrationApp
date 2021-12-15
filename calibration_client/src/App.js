@@ -7,6 +7,8 @@ import { StyledButtonLarge } from "./shared/SharedStyle";
 import "./App.css";
 import { NewUserInput } from "./NewUserInput";
 import axios from "axios";
+import TextField from "@material-ui/core/TextField";
+import Autocomplete from "@material-ui/lab/Autocomplete";
 
 const useSemiPersistentInt = (key, initialValue) => {
   const [value, setValue] = React.useState(
@@ -80,11 +82,17 @@ function Home() {
     );
   } else {
     const selectedUser = usersData.users.find((e) => e.id === selectedUserId);
+    const userNames = usersData.users.map((u) => u.name);
     return (
       <main>
         <div style={{ paddingBottom: "5px" }}>
           <StyledButtonLarge onClick={() => navigate("/questions")}>
             Отвечать на вопросы
+          </StyledButtonLarge>
+        </div>
+        <div style={{ paddingBottom: "5px" }}>
+          <StyledButtonLarge onClick={() => navigate("/about")}>
+            Помощь
           </StyledButtonLarge>
         </div>
         <div style={{ paddingBottom: "5px" }}>
@@ -103,16 +111,35 @@ function Home() {
             <hr />
           </div>
         )}
-        <div style={{ paddingBottom: "5px" }}>
-          <StyledButtonLarge onClick={() => navigate("/about")}>
-            Помощь
-          </StyledButtonLarge>
+        <div
+          style={{
+            marginLeft: "33%",
+            paddingTop: "10px",
+            paddingBottom: "5px",
+          }}
+        >
+          <Autocomplete
+            disableClearable
+            options={userNames}
+            value={selectedUser.name}
+            style={{ width: "50%" }}
+            onChange={(event, newValue) => {
+              const newUser = usersData.users.find((e) => e.name === newValue);
+              if (newUser == null)
+                throw new Error(
+                  `Can not select user ${newUser.name}: not in users list`
+                );
+              setSelectedUserId(newUser.id);
+            }}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Выбранный пользователь"
+                variant="outlined"
+              />
+            )}
+          />
         </div>
-        {selectedUserId > -1 && (
-          <div style={{ paddingBottom: "5px" }}>
-            Выбранный пользователь: {selectedUser.name}
-          </div>
-        )}
       </main>
     );
   }
