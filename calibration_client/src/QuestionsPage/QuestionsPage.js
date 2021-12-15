@@ -63,6 +63,11 @@ function getAnswerReducer(userId) {
     switch (action.type) {
       case "RESET":
         return getBlankAnswer(userId);
+      case "SET_QUESTION_ID":
+        return {
+          ...state,
+          ynq_id: action.payload,
+        };
       case "SET_YN":
         return {
           ...state,
@@ -148,6 +153,14 @@ export function QuestionsPage({ topic }) {
       setShowDontKnowConfirm(false);
     }
   }, [currentAnswer]);
+
+  React.useEffect(() => {
+    const questions = questionsData.questions;
+    if (questions.length > 0) {
+      const currentQuestion = questions[questions.length - 1];
+      dispatchAnswer({ type: "SET_QUESTION_ID", payload: currentQuestion.id });
+    }
+  }, [questionsData.questions]);
 
   return (
     <>
