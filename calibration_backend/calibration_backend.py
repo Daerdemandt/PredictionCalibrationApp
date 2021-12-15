@@ -19,7 +19,7 @@ def get_questions():
 @app.route("/get_users", methods=['GET'])
 def get_users():
     users = User.query.all()
-    return {"users": [{"id": u.id, "name": u.name} for u in users]}
+    return {"users": [{"user_id": u.user_id, "name": u.name} for u in users]}
 
 
 @app.route("/create_user", methods=['POST'])
@@ -36,8 +36,8 @@ def create_user():
 
 @app.route("/delete_user", methods=['DELETE'])
 def delete_user():
-    user_id = int(request.args.get("id"))
-    user = User.query.filter_by(id=user_id).one()
+    user_id = int(request.args.get("user_id"))
+    user = User.query.filter_by(user_id=user_id).one()
     try:
         db.session.delete(user)
         db.session.commit()
@@ -49,9 +49,8 @@ def delete_user():
 @app.route("/answer_question", methods=['POST'])
 def answer_question():
     data = request.get_json()
-    answer = YNAnswer(
-        user_id=data["user_id"], ynq_id=data["ynq_id"],
-        answer=data["answer"], probability=data["probability"])
+    answer = YNAnswer(**{field: data[field] for field in
+                         ["user_id", "ynq_id", "answer", "probability"]})
     try:
         db.session.add(answer)
         db.session.commit()

@@ -60,7 +60,7 @@ export function UserManagementPane({
 }) {
   const userNames = allUsers.map((u) => u.name);
   // assumed valid at this point if userNames not empty
-  const selectedUser = allUsers.find((e) => e.id === selectedUserId);
+  const selectedUser = allUsers.find((e) => e.user_id === selectedUserId);
 
   async function deleteUserConfirmResult(isConfirmed) {
     setShowConfirmDelete(false);
@@ -118,7 +118,7 @@ export function UserManagementPane({
                 throw new Error(
                   `Can not select user ${newUser.name}: not in users list`
                 );
-              setSelectedUserId(newUser.id);
+              setSelectedUserId(newUser.user_id);
             }}
             renderInput={(params) => (
               <TextField

@@ -94,7 +94,7 @@ export const AnsweredQuestionHistory = ({ answeredQuestions }) => {
         </StyledColumn>
       </StyledItem>
       {answeredQuestions.map((question) => (
-        <StyledItem key={question.id}>
+        <StyledItem key={question.ynq_id}>
           <StyledColumn width="30%">{question.question}</StyledColumn>
           <StyledColumn width="15%">
             {answerToString(question.userAnswer)}

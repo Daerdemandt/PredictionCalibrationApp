@@ -12,7 +12,6 @@
         "comment": ""
     },
     {
-        "id": 3,
         "question": "Латунь - сплав меди и железа",
         "topic": "science",
         "answer": 0,

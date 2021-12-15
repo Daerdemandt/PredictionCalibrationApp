@@ -55,11 +55,13 @@ function Home() {
 
   if (usersData.users.length !== 0) {
     const cantFindSelectedUser = !usersData.users.find(
-      (e) => e.id === selectedUserId
+      (e) => e.user_id === selectedUserId
     );
-    if (cantFindSelectedUser) setSelectedUserId(usersData.users[0].id);
+    if (cantFindSelectedUser) setSelectedUserId(usersData.users[0].user_id);
   }
-  const selectedUser = usersData.users.find((e) => e.id === selectedUserId);
+  const selectedUser = usersData.users.find(
+    (e) => e.user_id === selectedUserId
+  );
 
   const [showUserCreatedAlert, setShowUserCreatedAlert] = React.useState(false);
   async function createNewUser(newUsername) {
@@ -75,7 +77,7 @@ function Home() {
 
   async function deleteUser() {
     // Ignore errors right now
-    let result = await axios.delete(`/delete_user?id=${selectedUserId}`);
+    let result = await axios.delete(`/delete_user?user_id=${selectedUserId}`);
     setUsersData({
       ...usersData,
       users: result.data.users,

@@ -8,7 +8,7 @@ from utils import make_to_dict_clsfn
 class User(db.Model):
     __tablename__ = "users"
 
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True, nullable=False)
+    user_id = db.Column(db.Integer, primary_key=True, autoincrement=True, nullable=False)
     name = db.Column(db.String(64), nullable=False)
 
     @validates('name')
@@ -20,19 +20,19 @@ class User(db.Model):
         return name
 
     def __repr__(self):
-        return f"<User {self.id}>"
+        return f"<User {self.user_id}>"
 
 
 class YNQuestion(db.Model):
     __tablename__ = "yn_questions"
 
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    ynq_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     question = db.Column(db.String(256), nullable=False)
     topic = db.Column(db.String(32), nullable=False)
     answer = db.Column(db.Boolean(), nullable=False)
     comment = db.Column(db.String(256), default="")
 
-    to_dict = make_to_dict_clsfn(["id", "question", "topic", "answer", "comment"])
+    to_dict = make_to_dict_clsfn(["ynq_id", "question", "topic", "answer", "comment"])
 
     @validates('question')
     def validate_question(self, key, question):
@@ -65,15 +65,15 @@ class YNQuestion(db.Model):
         return comment
 
     def __repr__(self):
-        return f"<Question {self.id}>"
+        return f"<Question {self.ynq_id}>"
 
 
 class YNAnswer(db.Model):
     __tablename__ = "yn_answers"
 
-    user_id = db.Column(db.Integer, ForeignKey('users.id'),
+    user_id = db.Column(db.Integer, ForeignKey('users.user_id'),
                         primary_key=True, nullable=False)
-    ynq_id = db.Column(db.Integer, ForeignKey('yn_questions.id'),
+    ynq_id = db.Column(db.Integer, ForeignKey('yn_questions.ynq_id'),
                        primary_key=True, nullable=False)
     answer = db.Column(db.Integer, nullable=False)
     probability = db.Column(db.Integer, nullable=False)
@@ -100,8 +100,8 @@ class YNAnswer(db.Model):
 class Prediction(db.Model):
     __tablename__ = "predictions"
 
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True, nullable=False)
-    user_id = db.Column(db.Integer, ForeignKey('users.id'), nullable=False)
+    prediction_id = db.Column(db.Integer, primary_key=True, autoincrement=True, nullable=False)
+    user_id = db.Column(db.Integer, ForeignKey('users.user_id'), nullable=False)
     prediction = db.Column(db.Text, nullable=False)
     terminal_date = db.Column(db.DateTime, nullable=False)
     result = db.Column(db.Integer)

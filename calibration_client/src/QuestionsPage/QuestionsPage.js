@@ -96,7 +96,7 @@ function getAnswerReducer(userId) {
 export function QuestionsPage({ topic }) {
   const location = useLocation();
   const user = location.state.user;
-  if (user == null || user.id == null || user.name == null) {
+  if (user == null || user.user_id == null || user.name == null) {
     console.log(user);
     throw new ReferenceError("Malformed user");
   }
@@ -139,8 +139,8 @@ export function QuestionsPage({ topic }) {
   }, [requestQuestions]);
 
   const [currentAnswer, dispatchAnswer] = React.useReducer(
-    getAnswerReducer(user.id),
-    getBlankAnswer(user.id)
+    getAnswerReducer(user.user_id),
+    getBlankAnswer(user.user_id)
   );
 
   React.useEffect(() => {
@@ -158,7 +158,10 @@ export function QuestionsPage({ topic }) {
     const questions = questionsData.questions;
     if (questions.length > 0) {
       const currentQuestion = questions[questions.length - 1];
-      dispatchAnswer({ type: "SET_QUESTION_ID", payload: currentQuestion.id });
+      dispatchAnswer({
+        type: "SET_QUESTION_ID",
+        payload: currentQuestion.ynq_id,
+      });
     }
   }, [questionsData.questions]);
 
