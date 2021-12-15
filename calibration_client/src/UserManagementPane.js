@@ -81,7 +81,12 @@ export function UserManagementPane({
       {showNewUser && (
         <div>
           <hr />
-          <NewUserInput createNewUser={createNewUser} />
+          <NewUserInput
+            createNewUser={(newUsername) => {
+              setShowNewUser(false);
+              createNewUser(newUsername);
+            }}
+          />
           <hr />
         </div>
       )}

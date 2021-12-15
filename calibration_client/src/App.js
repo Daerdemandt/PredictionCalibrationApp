@@ -6,6 +6,7 @@ import { QuestionsPage } from "./QuestionsPage/QuestionsPage";
 import { StyledButtonLarge } from "./shared/SharedStyle";
 import "./App.css";
 import { NewUserInput, UserManagementPane } from "./UserManagementPane";
+import InfoAlert from "./shared/InfoAlert";
 import axios from "axios";
 
 const useSemiPersistentInt = (key, initialValue) => {
@@ -59,7 +60,9 @@ function Home() {
     if (cantFindSelectedUser) setSelectedUserId(usersData.users[0].id);
   }
 
+  const [showUserCreatedAlert, setShowUserCreatedAlert] = React.useState(false);
   async function createNewUser(newUsername) {
+    setShowUserCreatedAlert(true);
     const postData = { name: newUsername };
     // Ignore errors right now
     let result = await axios.post("/create_user", postData);
@@ -107,6 +110,13 @@ function Home() {
           setSelectedUserId={setSelectedUserId}
           createNewUser={createNewUser}
           deleteUser={deleteUser}
+        />
+        <InfoAlert
+          open={showUserCreatedAlert}
+          title={`Пользователь создан`}
+          onClose={() => {
+            setShowUserCreatedAlert(false);
+          }}
         />
       </main>
     );
