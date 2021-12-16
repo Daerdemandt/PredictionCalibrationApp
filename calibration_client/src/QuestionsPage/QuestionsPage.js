@@ -1,6 +1,6 @@
 import React from "react";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
   Answer,
   AnsweredQuestionHistory,
@@ -165,6 +165,7 @@ export function QuestionsPage({ topic, user }) {
       });
     }
   }, [questionsData.questions]);
+  const navigate = useNavigate();
 
   return (
     <>
@@ -221,10 +222,10 @@ export function QuestionsPage({ topic, user }) {
           />
         )}
         <hr />
+        <StyledButtonLarge onClick={() => navigate(-1)}>
+          Назад
+        </StyledButtonLarge>
       </main>
-      <nav>
-        <Link to="/">Назад</Link>
-      </nav>
     </>
   );
 }

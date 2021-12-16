@@ -9,8 +9,9 @@ import {
   Line,
   Legend,
 } from "recharts";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import prettifyResponseError from "./shared/prettifyResponseError";
+import { StyledButtonLarge } from "./shared/SharedStyle";
 
 function ProbsLineChart({ statistics, children }) {
   return (
@@ -70,9 +71,11 @@ export function StatisticsPage({ user }) {
   React.useEffect(() => {
     requestStatistics();
   }, [requestStatistics]);
+  const navigate = useNavigate();
 
   return (
     <>
+      <StyledButtonLarge onClick={() => navigate(-1)}>Назад</StyledButtonLarge>
       <div
         style={{
           display: "flex",
@@ -134,9 +137,6 @@ export function StatisticsPage({ user }) {
           />
         </ProbsLineChart>
       </div>
-      <nav>
-        <Link to="/">Назад</Link>
-      </nav>
     </>
   );
 }
