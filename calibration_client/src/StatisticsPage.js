@@ -29,7 +29,7 @@ function ProbsLineChart({ statistics, children }) {
         margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
       >
         <XAxis
-          dataKey="probability_quotent"
+          dataKey="probability_quotient"
           label={{
             value: "Предсказанная вероятность (%)",
             position: "insideBottomRight",
@@ -93,7 +93,7 @@ export function StatisticsPage({ user }) {
           />
           <Line
             type="monotone"
-            dataKey="probability_quotent"
+            dataKey="probability_quotient"
             name="Идеальная калибровка"
             stroke="#ff0000"
           />

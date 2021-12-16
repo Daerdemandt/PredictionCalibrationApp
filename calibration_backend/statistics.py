@@ -25,7 +25,7 @@ def to_statistics(datapoints):
         grouped_datapoints[datapoint.probability].append(datapoint)
 
     return [{
-        "probability_quotent": pq,
+        "probability_quotient": pq,
         "total": len(dpts),
         "total_correct": number_of_correct_answers(dpts),
         "correct_percent": int(100 * number_of_correct_answers(dpts) / len(dpts)) if dpts else None
