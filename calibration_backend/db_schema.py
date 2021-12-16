@@ -94,7 +94,7 @@ class YNAnswer(db.Model):
         return probability
 
     def __repr__(self):
-        return f"<Answer {self.user_id}, {self.question_id}, {self.answer}>"
+        return f"<Answer {self.user_id}, {self.ynq_id}, {self.answer}>"
 
 
 class Prediction(db.Model):

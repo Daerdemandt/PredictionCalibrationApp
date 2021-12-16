@@ -120,7 +120,7 @@ export function QuestionsPage({ topic }) {
   const requestQuestions = React.useCallback(async () => {
     if (questionsData.questions.length <= 1 && questionsData.hasMore) {
       try {
-        let url = `/get_questions?page=${questionsData.nextPage}`;
+        let url = `/get_questions?page=${questionsData.nextPage}&user_id=${user.user_id}`;
         const result = await axios.get(url);
         dispatchQuestionsData({
           type: "ADD",
@@ -133,6 +133,7 @@ export function QuestionsPage({ topic }) {
         dispatchQuestionsData({ type: "ERROR" });
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [questionsData]);
   React.useEffect(() => {
     requestQuestions();

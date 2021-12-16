@@ -7,7 +7,18 @@ from db_schema import User, YNAnswer, YNQuestion
 @app.route("/get_questions", methods=['GET'])
 def get_questions():
     page = int(request.args.get("page"))
-    questions = YNQuestion.query.all()
+    try:
+        user_id = int(request.args.get("user_id"))
+    except Exception as e:
+        print("Tried to get questions without user_id or could not parse user_id")
+        return "Error"
+    answered_questions_for_user_q = YNAnswer.query\
+        .filter_by(user_id=user_id)\
+        .subquery()
+    remaining_questions_for_user_q = db.session.query(YNQuestion)\
+        .outerjoin(answered_questions_for_user_q)\
+        .filter_by(answer=None)
+    questions = remaining_questions_for_user_q.all()
     questions_payload = [q.to_dict() for q in questions]
     return {
         "questions": questions_payload,
