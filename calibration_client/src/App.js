@@ -40,11 +40,24 @@ function Home() {
         error: null,
       });
     } catch (error) {
+      let errorMessage = "";
+      switch (error.response.status) {
+        case 500:
+          errorMessage = "Ошибка 500; запущен ли бэкэнд сервер?";
+          break;
+        case 404:
+          errorMessage =
+            "Ошибка 404; не удалось получить список пользователей" +
+            " - не поменял ли кто-то адрес в API?";
+          break;
+        default:
+          errorMessage = error.response.data;
+      }
       console.log(error);
       setUsersData({
         users: [],
         loading: false,
-        error: error,
+        error: errorMessage,
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
