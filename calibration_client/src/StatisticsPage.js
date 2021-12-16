@@ -1,0 +1,149 @@
+import React from "react";
+import axios from "axios";
+import {
+  LineChart,
+  XAxis,
+  YAxis,
+  Tooltip,
+  CartesianGrid,
+  Line,
+  Legend,
+} from "recharts";
+import { Link, useLocation } from "react-router-dom";
+import prettifyResponseError from "./shared/prettifyResponseError";
+
+function ProbsLineChart({ statistics, children }) {
+  return (
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      <LineChart
+        width={window.innerWidth * 0.7}
+        height={window.innerHeight * 0.8}
+        data={statistics.statistics}
+        margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
+      >
+        <XAxis
+          dataKey="probability_quotent"
+          label={{
+            value: "Предсказанная вероятность (%)",
+            position: "insideBottomRight",
+            offset: -10,
+          }}
+        />
+        <Tooltip />
+        <CartesianGrid stroke="#f5f5f5" />
+        {children}
+        <Legend />
+      </LineChart>
+    </div>
+  );
+}
+
+export function StatisticsPage() {
+  const location = useLocation();
+  const user = location.state.user;
+  if (user == null || user.user_id == null || user.name == null) {
+    console.log(user);
+    throw new ReferenceError("Malformed user");
+  }
+
+  const [statistics, setStatistics] = React.useState({
+    statistics: [],
+    error: null,
+  });
+  const requestStatistics = React.useCallback(async () => {
+    try {
+      let url = `/statistics?user_id=${user.user_id}`;
+      const result = await axios.get(url);
+      setStatistics({
+        statistics: result.data.statistics,
+        error: null,
+      });
+    } catch (error) {
+      console.log(error);
+      let errorMessage = prettifyResponseError(error);
+      setStatistics({
+        statistics: [],
+        error: errorMessage,
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  React.useEffect(() => {
+    requestStatistics();
+  }, [requestStatistics]);
+
+  return (
+    <>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <ProbsLineChart statistics={statistics}>
+          <YAxis
+            label={{
+              value: "Действительное количество верных ответов (%)",
+              angle: -90,
+              position: "insideLeft",
+            }}
+          />
+          <Line
+            type="monotone"
+            dataKey="probability_quotent"
+            name="Идеальная калибровка"
+            stroke="#ff0000"
+          />
+          <Line
+            type="monotone"
+            dataKey="correct_percent"
+            name="Процент верных ответов"
+            stroke="#0000ff"
+            connectNulls={true}
+          />
+        </ProbsLineChart>
+      </div>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <ProbsLineChart statistics={statistics}>
+          <YAxis
+            label={{
+              value: "Количество вопросов",
+              angle: -90,
+              position: "insideLeft",
+            }}
+          />
+          <Line
+            type="monotone"
+            dataKey="total_correct"
+            name="Верно отвечено"
+            stroke="#00aaaa"
+            connectNulls={true}
+          />
+          <Line
+            type="monotone"
+            dataKey="total"
+            name="Всего задано"
+            stroke="#aa00aa"
+            connectNulls={true}
+          />
+        </ProbsLineChart>
+      </div>
+      <nav>
+        <Link to="/">Назад</Link>
+      </nav>
+    </>
+  );
+}

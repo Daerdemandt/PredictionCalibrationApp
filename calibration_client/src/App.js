@@ -3,6 +3,7 @@ import { Routes, Route } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { About } from "./About";
 import { QuestionsPage } from "./QuestionsPage/QuestionsPage";
+import { StatisticsPage } from "./StatisticsPage";
 import { StyledButtonLarge } from "./shared/SharedStyle";
 import "./App.css";
 import { NewUserInput, UserManagementPane } from "./UserManagementPane";
@@ -109,6 +110,15 @@ function Home() {
           </StyledButtonLarge>
         </div>
         <div style={{ paddingBottom: "5px" }}>
+          <StyledButtonLarge
+            onClick={() =>
+              navigate("/statistics", { state: { user: selectedUser } })
+            }
+          >
+            Статистика
+          </StyledButtonLarge>
+        </div>
+        <div style={{ paddingBottom: "5px" }}>
           <StyledButtonLarge onClick={() => navigate("/about")}>
             Помощь
           </StyledButtonLarge>
@@ -139,6 +149,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/questions" element={<QuestionsPage topic="любая" />} />
+        <Route path="/statistics" element={<StatisticsPage />} />
         <Route path="/about" element={<About />} />
       </Routes>
     </div>
