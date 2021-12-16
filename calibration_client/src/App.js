@@ -77,6 +77,7 @@ function Home({ selectedUser, setSelectedUser }) {
     let result = await axios.delete(
       `/delete_user?user_id=${selectedUser.user_id}`
     );
+    if (result.data.users) setSelectedUser(result.data.users[0]);
     setUsersData({
       ...usersData,
       users: result.data.users,
