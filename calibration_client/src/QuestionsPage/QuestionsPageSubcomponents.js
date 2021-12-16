@@ -110,7 +110,7 @@ export const AnsweredQuestionHistory = ({ answeredQuestions }) => {
 };
 
 export const MainPlaque = ({ questions, hasMore, error }) => {
-  if (error) return <h1>Ошибка при загрузке вопросов</h1>;
+  if (error != null) return <h1>Ошибка при загрузке вопросов: {error}</h1>;
   if (questions.length === 0) {
     if (hasMore) return <h1>Загрузка...</h1>;
     else return <h1>Вопросы закончились, попробуйте выбрать другую тему</h1>;

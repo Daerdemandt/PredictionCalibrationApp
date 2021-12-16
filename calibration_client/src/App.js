@@ -8,6 +8,7 @@ import "./App.css";
 import { NewUserInput, UserManagementPane } from "./UserManagementPane";
 import InfoAlert from "./shared/InfoAlert";
 import axios from "axios";
+import prettifyResponseError from "./shared/prettifyResponseError";
 
 const useSemiPersistentInt = (key, initialValue) => {
   const [value, setValue] = React.useState(
@@ -40,20 +41,8 @@ function Home() {
         error: null,
       });
     } catch (error) {
-      let errorMessage = "";
-      switch (error.response.status) {
-        case 500:
-          errorMessage = "Ошибка 500; запущен ли бэкэнд сервер?";
-          break;
-        case 404:
-          errorMessage =
-            "Ошибка 404; не удалось получить список пользователей" +
-            " - не поменял ли кто-то адрес в API?";
-          break;
-        default:
-          errorMessage = error.response.data;
-      }
       console.log(error);
+      let errorMessage = prettifyResponseError(error);
       setUsersData({
         users: [],
         loading: false,

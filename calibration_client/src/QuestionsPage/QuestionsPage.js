@@ -10,6 +10,7 @@ import {
   MainPlaque,
 } from "./QuestionsPageSubcomponents";
 import { StyledButtonLarge } from "../shared/SharedStyle";
+import prettifyResponseError from "../shared/prettifyResponseError";
 
 const getBlankAnswer = (userId) => ({
   ynq_id: -1,
@@ -25,7 +26,7 @@ const questionReducer = (state, action) => {
       return {
         ...state,
         loading: false,
-        error: false,
+        error: null,
         questions: state.questions.concat(action.payload.questions),
         hasMore: action.payload.hasMore,
         nextPage: state.nextPage + 1,
@@ -51,10 +52,10 @@ const questionReducer = (state, action) => {
       return {
         ...state,
         loading: false,
-        error: true,
+        error: action.payload,
       };
     default:
-      throw new Error();
+      throw new TypeError("Illegal action in questionReducer");
   }
 };
 
@@ -84,7 +85,7 @@ function getAnswerReducer(userId) {
           confirmed: true,
         };
       default:
-        throw new Error();
+        throw new TypeError("Illegal action in getAnswerReducer");
     }
   };
 }
@@ -109,7 +110,7 @@ export function QuestionsPage({ topic }) {
     questionReducer,
     {
       loading: true,
-      error: false,
+      error: null,
       questions: [],
       answeredQuestions: [],
       hasMore: true,
@@ -118,7 +119,11 @@ export function QuestionsPage({ topic }) {
   );
 
   const requestQuestions = React.useCallback(async () => {
-    if (questionsData.questions.length <= 1 && questionsData.hasMore) {
+    if (
+      questionsData.error == null &&
+      questionsData.questions.length <= 1 &&
+      questionsData.hasMore
+    ) {
       try {
         let url = `/get_questions?page=${questionsData.nextPage}&user_id=${user.user_id}`;
         const result = await axios.get(url);
@@ -130,7 +135,9 @@ export function QuestionsPage({ topic }) {
           },
         });
       } catch (error) {
-        dispatchQuestionsData({ type: "ERROR" });
+        console.log(error);
+        let errorMessage = prettifyResponseError(error);
+        dispatchQuestionsData({ type: "ERROR", payload: errorMessage });
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
