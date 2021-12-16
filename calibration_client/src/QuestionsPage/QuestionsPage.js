@@ -1,6 +1,6 @@
 import React from "react";
 import axios from "axios";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import {
   Answer,
   AnsweredQuestionHistory,
@@ -94,14 +94,7 @@ function getAnswerReducer(userId) {
 
 // ---
 
-export function QuestionsPage({ topic }) {
-  const location = useLocation();
-  const user = location.state.user;
-  if (user == null || user.user_id == null || user.name == null) {
-    console.log(user);
-    throw new ReferenceError("Malformed user");
-  }
-
+export function QuestionsPage({ topic, user }) {
   const [showProbs, setShowProbs] = React.useState(false);
   const [showDontKnowConfirm, setShowDontKnowConfirm] = React.useState(false);
   const [showAnswered, setShowAnswered] = React.useState(false);

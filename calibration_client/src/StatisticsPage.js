@@ -9,7 +9,7 @@ import {
   Line,
   Legend,
 } from "recharts";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import prettifyResponseError from "./shared/prettifyResponseError";
 
 function ProbsLineChart({ statistics, children }) {
@@ -44,14 +44,7 @@ function ProbsLineChart({ statistics, children }) {
   );
 }
 
-export function StatisticsPage() {
-  const location = useLocation();
-  const user = location.state.user;
-  if (user == null || user.user_id == null || user.name == null) {
-    console.log(user);
-    throw new ReferenceError("Malformed user");
-  }
-
+export function StatisticsPage({ user }) {
   const [statistics, setStatistics] = React.useState({
     statistics: [],
     error: null,

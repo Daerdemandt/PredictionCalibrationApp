@@ -53,14 +53,12 @@ export function NewUserInput({ createNewUser }) {
 
 export function UserManagementPane({
   allUsers,
-  selectedUserId,
-  setSelectedUserId,
+  selectedUser,
+  setSelectedUser,
   createNewUser,
   deleteUser,
 }) {
   const userNames = allUsers.map((u) => u.name);
-  // assumed valid at this point if userNames not empty
-  const selectedUser = allUsers.find((e) => e.user_id === selectedUserId);
 
   async function deleteUserConfirmResult(isConfirmed) {
     setShowConfirmDelete(false);
@@ -118,7 +116,7 @@ export function UserManagementPane({
                 throw new Error(
                   `Can not select user ${newUser.name}: not in users list`
                 );
-              setSelectedUserId(newUser.user_id);
+              setSelectedUser(newUser);
             }}
             renderInput={(params) => (
               <TextField

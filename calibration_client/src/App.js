@@ -11,22 +11,19 @@ import InfoAlert from "./shared/InfoAlert";
 import axios from "axios";
 import prettifyResponseError from "./shared/prettifyResponseError";
 
-const useSemiPersistentInt = (key, initialValue) => {
-  const [value, setValue] = React.useState(
-    Number(localStorage.getItem(key)) || initialValue
-  );
+const useSemiPersistentState = (key, initialValue) => {
+  let storedValue = null;
+  const storedStr = localStorage.getItem(key);
+  if (storedStr != null && storedStr !== "NaN")
+    storedValue = JSON.parse(storedStr);
+  const [value, setValue] = React.useState(storedValue || initialValue);
   React.useEffect(() => {
-    localStorage.setItem(key, Number(value));
+    localStorage.setItem(key, JSON.stringify(value));
   }, [value, key]);
   return [value, setValue];
 };
 
-function Home() {
-  const [selectedUserId, setSelectedUserId] = useSemiPersistentInt(
-    "selectedUserId",
-    -1
-  );
-
+function Home({ selectedUser, setSelectedUser }) {
   const [usersData, setUsersData] = React.useState({
     users: [],
     loading: true,
@@ -36,11 +33,18 @@ function Home() {
     try {
       let url = `/get_users`;
       const result = await axios.get(url);
+      const users = result.data.users;
       setUsersData({
-        users: result.data.users,
+        users: users,
         loading: false,
         error: null,
       });
+      if (users.length !== 0) {
+        const cantFindSelectedUser = !users.find(
+          (e) => e.user_id === selectedUser.user_id
+        );
+        if (cantFindSelectedUser) setSelectedUser(users[0]);
+      }
     } catch (error) {
       console.log(error);
       let errorMessage = prettifyResponseError(error);
@@ -56,16 +60,6 @@ function Home() {
     requestUsers();
   }, [requestUsers]);
 
-  if (usersData.users.length !== 0) {
-    const cantFindSelectedUser = !usersData.users.find(
-      (e) => e.user_id === selectedUserId
-    );
-    if (cantFindSelectedUser) setSelectedUserId(usersData.users[0].user_id);
-  }
-  const selectedUser = usersData.users.find(
-    (e) => e.user_id === selectedUserId
-  );
-
   const [showUserCreatedAlert, setShowUserCreatedAlert] = React.useState(false);
   async function createNewUser(newUsername) {
     setShowUserCreatedAlert(true);
@@ -80,7 +74,9 @@ function Home() {
 
   async function deleteUser() {
     // Ignore errors right now
-    let result = await axios.delete(`/delete_user?user_id=${selectedUserId}`);
+    let result = await axios.delete(
+      `/delete_user?user_id=${selectedUser.user_id}`
+    );
     setUsersData({
       ...usersData,
       users: result.data.users,
@@ -101,20 +97,12 @@ function Home() {
     return (
       <main>
         <div style={{ paddingBottom: "5px" }}>
-          <StyledButtonLarge
-            onClick={() =>
-              navigate("/questions", { state: { user: selectedUser } })
-            }
-          >
+          <StyledButtonLarge onClick={() => navigate("/questions")}>
             Отвечать на вопросы
           </StyledButtonLarge>
         </div>
         <div style={{ paddingBottom: "5px" }}>
-          <StyledButtonLarge
-            onClick={() =>
-              navigate("/statistics", { state: { user: selectedUser } })
-            }
-          >
+          <StyledButtonLarge onClick={() => navigate("/statistics")}>
             Статистика
           </StyledButtonLarge>
         </div>
@@ -125,8 +113,8 @@ function Home() {
         </div>
         <UserManagementPane
           allUsers={usersData.users}
-          selectedUserId={selectedUserId}
-          setSelectedUserId={setSelectedUserId}
+          selectedUser={selectedUser}
+          setSelectedUser={setSelectedUser}
           createNewUser={createNewUser}
           deleteUser={deleteUser}
         />
@@ -143,13 +131,32 @@ function Home() {
 }
 
 function App() {
+  const [selectedUser, setSelectedUser] = useSemiPersistentState(
+    "selectedUser",
+    { user_id: -1, name: "" }
+  );
+
   return (
     <div className="App">
       <h1>Калибровка уверенности</h1>
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/questions" element={<QuestionsPage topic="любая" />} />
-        <Route path="/statistics" element={<StatisticsPage />} />
+        <Route
+          path="/"
+          element={
+            <Home
+              selectedUser={selectedUser}
+              setSelectedUser={setSelectedUser}
+            />
+          }
+        />
+        <Route
+          path="/questions"
+          element={<QuestionsPage user={selectedUser} topic="любая" />}
+        />
+        <Route
+          path="/statistics"
+          element={<StatisticsPage user={selectedUser} />}
+        />
         <Route path="/about" element={<About />} />
       </Routes>
     </div>
