@@ -1,7 +1,8 @@
 from flask import request
 
-from base_app import app, PAGE_SIZE, db
+from base_app import app, db
 from db_schema import User, YNAnswer, YNQuestion
+from statistics import to_statistics
 
 
 @app.route("/get_questions", methods=['GET'])
@@ -68,6 +69,26 @@ def answer_question():
     except Exception as e:
         return f"Error: {str(e)}"
     return "OK"
+
+
+@app.route("/statistics", methods=['GET'])
+def get_statistics():
+    try:
+        user_id = int(request.args.get("user_id"))
+    except Exception:
+        print("Tried to get questions without user_id or could not parse user_id")
+        return "Error"
+
+    answered_questions_for_user_q = db.session.query(YNAnswer) \
+        .filter_by(user_id=user_id) \
+        .subquery()
+    comparisons_for_user_q = db.session.query(
+        YNQuestion.answer,
+        answered_questions_for_user_q.c.answer,
+        answered_questions_for_user_q.c.probability) \
+        .join(answered_questions_for_user_q)
+    datapoints = comparisons_for_user_q.all()
+    return {"statistics": to_statistics(datapoints)}
 
 
 if __name__ == "__main__":

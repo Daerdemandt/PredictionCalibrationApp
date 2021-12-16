@@ -2,7 +2,7 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship, validates
 
 from base_app import db
-from utils import make_to_dict_clsfn
+from utils import make_to_dict_clsfn, VALID_PROBABILITY_QUANTS
 
 
 class User(db.Model):
@@ -89,7 +89,7 @@ class YNAnswer(db.Model):
 
     @validates('probability')
     def validate_probability(self, key, probability):
-        if not (0 <= probability <= 100) and probability != -1:
+        if probability not in VALID_PROBABILITY_QUANTS:
             raise AssertionError('Invalid probability')
         return probability
 
