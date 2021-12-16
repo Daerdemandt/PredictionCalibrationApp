@@ -11,6 +11,8 @@ class User(db.Model):
     user_id = db.Column(db.Integer, primary_key=True, autoincrement=True, nullable=False)
     name = db.Column(db.String(64), nullable=False)
 
+    ynanswer = relationship("YNAnswer", cascade="all,delete", backref="users")
+
     @validates('name')
     def validate_username(self, key, name):
         if not name:
@@ -33,6 +35,7 @@ class YNQuestion(db.Model):
     comment = db.Column(db.String(256), default="")
 
     to_dict = make_to_dict_clsfn(["ynq_id", "question", "topic", "answer", "comment"])
+    ynanswer = relationship("YNAnswer", cascade="all,delete", backref="yn_questions")
 
     @validates('question')
     def validate_question(self, key, question):
@@ -77,9 +80,6 @@ class YNAnswer(db.Model):
                        primary_key=True, nullable=False)
     answer = db.Column(db.Integer, nullable=False)
     probability = db.Column(db.Integer, nullable=False)
-
-    user = relationship("User")
-    yn_question = relationship("YNQuestion")
 
     @validates('answer')
     def validate_answer(self, key, answer):
