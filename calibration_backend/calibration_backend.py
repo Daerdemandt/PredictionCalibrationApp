@@ -1,5 +1,4 @@
 from flask import request
-
 from common.base_app import app, db
 from db_ops.entities import User, YNAnswer
 from db_ops.queries import query_remaining_questions, query_answers_statistics_datapoints
@@ -25,7 +24,10 @@ def get_questions():
 
 @app.route("/get_users", methods=['GET'])
 def get_users():
-    users = User.query.all()
+    try:
+        users = User.query.all()
+    except Exception as e:
+        return {"error": f"Could not get users: {str(e)}"}, 503
     return {"users": [{"user_id": u.user_id, "name": u.name} for u in users]}
 
 
@@ -37,7 +39,7 @@ def create_user():
         db.session.add(new_user)
         db.session.commit()
     except Exception as e:
-        return f"Error: {str(e)}"
+        return {"error": f"Could not add user: {str(e)}"}, 503
     return get_users()
 
 
@@ -49,7 +51,7 @@ def delete_user():
         db.session.delete(user)
         db.session.commit()
     except Exception as e:
-        return f"Error: {str(e)}"
+        return {"error": f"Could not delete user: {str(e)}"}, 503
     return get_users()
 
 
@@ -62,7 +64,7 @@ def answer_question():
         db.session.add(answer)
         db.session.commit()
     except Exception as e:
-        return f"Error: {str(e)}"
+        return {"error": f"Could not add answer: {str(e)}"}, 503
     return "OK"
 
 
@@ -70,10 +72,13 @@ def answer_question():
 def get_statistics():
     try:
         user_id = int(request.args.get("user_id"))
-    except Exception:
-        print("Tried to get questions without user_id or could not parse user_id")
-        return "Error"
-    datapoints = query_answers_statistics_datapoints(user_id)
+    except:
+        print(f"Bad request for /statistics: {request.url}, no user_id")
+        return {"error": "No user provided"}, 400
+    try:
+        datapoints = query_answers_statistics_datapoints(user_id)
+    except Exception as e:
+        return {"error": f"Could not query statistics data: {str(e)}"}, 503
     return {"statistics": to_statistics(datapoints)}
 
 
