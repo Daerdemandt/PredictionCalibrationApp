@@ -73,6 +73,8 @@ export function StatisticsPage({ user }) {
   }, [requestStatistics]);
   const navigate = useNavigate();
 
+  if (statistics.error != null)
+    return <h1>Ошибка при загрузке вопросов: {statistics.error}</h1>;
   return (
     <>
       <StyledButtonLarge onClick={() => navigate(-1)}>Назад</StyledButtonLarge>
