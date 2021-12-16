@@ -1,8 +1,8 @@
 import pathlib
 
-from base_app import db
-from db_schema import YNQuestion
-from utils import load_questions
+from common.base_app import db
+from db_ops.entities import YNQuestion
+from common.utils import load_questions
 
 pathlib.Path("data.db").unlink(missing_ok=True)
 db.create_all()

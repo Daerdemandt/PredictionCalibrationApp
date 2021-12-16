@@ -1,7 +1,8 @@
 from flask import request
 
-from base_app import app, db
-from db_schema import User, YNAnswer, YNQuestion
+from common.base_app import app, db
+from db_ops.entities import User, YNAnswer
+from db_ops.queries import query_remaining_questions, query_answers_statistics_datapoints
 from statistics import to_statistics
 
 
@@ -13,13 +14,7 @@ def get_questions():
     except Exception as e:
         print("Tried to get questions without user_id or could not parse user_id")
         return "Error"
-    answered_questions_for_user_q = YNAnswer.query\
-        .filter_by(user_id=user_id)\
-        .subquery()
-    remaining_questions_for_user_q = db.session.query(YNQuestion)\
-        .outerjoin(answered_questions_for_user_q)\
-        .filter_by(answer=None)
-    questions = remaining_questions_for_user_q.all()
+    questions = query_remaining_questions(user_id)
     questions_payload = [q.to_dict() for q in questions]
     return {
         "questions": questions_payload,
@@ -78,16 +73,7 @@ def get_statistics():
     except Exception:
         print("Tried to get questions without user_id or could not parse user_id")
         return "Error"
-
-    answered_questions_for_user_q = db.session.query(YNAnswer) \
-        .filter_by(user_id=user_id) \
-        .subquery()
-    comparisons_for_user_q = db.session.query(
-        YNQuestion.answer,
-        answered_questions_for_user_q.c.answer,
-        answered_questions_for_user_q.c.probability) \
-        .join(answered_questions_for_user_q)
-    datapoints = comparisons_for_user_q.all()
+    datapoints = query_answers_statistics_datapoints(user_id)
     return {"statistics": to_statistics(datapoints)}
 
 

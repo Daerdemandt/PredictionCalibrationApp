@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from typing import List
-from utils import VALID_PROBABILITY_QUANTS
+from common.utils import VALID_PROBABILITY_QUANTS
 
 
 @dataclass

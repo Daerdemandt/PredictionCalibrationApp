@@ -2,7 +2,7 @@ import json
 
 
 def load_questions():
-    with open("questions_pack_science.txt", "r") as fp:
+    with open("../raw_data/questions_pack_science.txt", "r") as fp:
         questions = json.load(fp)
         return questions
 

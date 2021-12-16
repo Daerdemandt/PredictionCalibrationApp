@@ -1,8 +1,8 @@
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship, validates
 
-from base_app import db
-from utils import make_to_dict_clsfn, VALID_PROBABILITY_QUANTS
+from common.base_app import db
+from common.utils import make_to_dict_clsfn, VALID_PROBABILITY_QUANTS
 
 
 class User(db.Model):
