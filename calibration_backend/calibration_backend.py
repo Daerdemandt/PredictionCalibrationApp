@@ -1,5 +1,8 @@
+from typing import Dict
+
 from flask import request
 from common.base_app import init_app
+from common.utils import gather_and_validate_fields
 from db_ops.entities import initialize_schema
 from statistics import to_statistics
 
@@ -7,17 +10,18 @@ from statistics import to_statistics
 def initialize_request_handlers(app, db, Schema):
     @app.route("/get_questions", methods=['GET'])
     def get_questions():
-        page = int(request.args.get("page"))
         try:
-            user_id = int(request.args.get("user_id"))
-        except Exception as e:
-            print("Tried to get questions without user_id or could not parse user_id")
-            return "Error"
-        questions = Schema.query_remaining_questions(user_id)
+            data = gather_and_validate_fields({
+                "page": int,
+                "user_id": int,
+            }, request.args)
+        except ValueError as e:
+            return {"error": str(e) + f"in data for /{create_question}"}, 400
+        questions = Schema.query_remaining_questions(data["user_id"])
         questions_payload = [q.to_dict() for q in questions]
         return {
             "questions": questions_payload,
-            "page": page,
+            "page": data["page"],
             "has_more": False
         }
 
@@ -77,6 +81,27 @@ def initialize_request_handlers(app, db, Schema):
         except Exception as e:
             return {"error": f"Could not query statistics data: {str(e)}"}, 503
         return {"statistics": to_statistics(datapoints)}
+
+    @app.route("/create_question", methods=['POST'])
+    def create_question():
+        try:
+            data = gather_and_validate_fields({
+                "question": str,
+                "answer": int,
+                "topic": str,
+            }, request.form)
+            if data["answer"] not in {0, 1}:
+                raise ValueError(f"Invalid answer: {data['answer']}")
+        except ValueError as e:
+            return {"error": str(e) + f" in data for /{create_question}"}, 400
+        data |= gather_and_validate_fields({"comment": str}, request.form, required=False)
+        try:
+            new_ynquestion = Schema.YNQuestion(**data)
+            db.session.add(new_ynquestion)
+            db.session.commit()
+        except Exception as e:
+            return {"error": f"Could not add question: {str(e)}"}, 503
+        return "OK", 200
 
 
 if __name__ == "__main__":
