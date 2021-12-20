@@ -29,6 +29,19 @@ def client(app_db):
     db.drop_all()
 
 
+@pytest.fixture(scope="function")
+def client_uq(client):
+    _ = client.post('/create_user', data={"name": "TestUser1"})
+    _ = client.post('/create_user', data={"name": "TestUser2"})
+    _ = client.post('/create_question', data={
+        "question": "TestQ1", "answer": 1, "topic": "integration_testing"})
+    _ = client.post('/create_question', data={
+        "question": "TestQ2", "answer": 0, "topic": "integration_testing"})
+    _ = client.post('/create_question', data={
+        "question": "TestQ3", "answer": 1, "topic": "more_testing"})
+    yield client
+
+
 def exactly_one(iterable: Iterable):
     result = False
     for value in iterable:
@@ -156,6 +169,30 @@ def test_create_questions_error_when_parameters_not_supplied(client):
     response = client.get('/get_questions?page=1&user_id=1')
     assert_get_questions_correct_response(response)
     assert_question_in_response(response.get_json()["questions"], None, 0)
+
+
+def test_answer_questions_happy_day(client_uq):
+    response = client_uq.get('/get_questions?page=1&user_id=1')
+    assert len(response.get_json()["questions"]) == 3
+    response = client_uq.get('/get_questions?page=1&user_id=2')
+    assert len(response.get_json()["questions"]) == 3
+    response = client_uq.post('/answer_question', data={
+        "user_id": 1, "ynq_id": 1, "answer": 0, "probability": 55})
+    assert response.status_code == 200
+    response = client_uq.get('/get_questions?page=1&user_id=1')
+    assert len(response.get_json()["questions"]) == 2
+    response = client_uq.get('/get_questions?page=1&user_id=2')
+    assert len(response.get_json()["questions"]) == 3
+    response = client_uq.post('/answer_question', data={
+        "user_id": 2, "ynq_id": 2, "answer": 1, "probability": 55})
+    assert response.status_code == 200
+    response = client_uq.post('/answer_question', data={
+        "user_id": 2, "ynq_id": 3, "answer": 2, "probability": -1})
+    assert response.status_code == 200
+    response = client_uq.get('/get_questions?page=1&user_id=1')
+    assert len(response.get_json()["questions"]) == 2
+    response = client_uq.get('/get_questions?page=1&user_id=2')
+    assert len(response.get_json()["questions"]) == 1
 
 
 if __name__ == "__main__":

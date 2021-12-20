@@ -59,15 +59,22 @@ def initialize_request_handlers(app, db, Schema):
 
     @app.route("/answer_question", methods=['POST'])
     def answer_question():
-        data = request.get_json()
-        answer = Schema.YNAnswer(**{field: data[field] for field in
-                             ["user_id", "ynq_id", "answer", "probability"]})
         try:
+            data = gather_and_validate_fields({
+                "user_id": int,
+                "ynq_id": int,
+                "answer": int,
+                "probability": int,
+            }, request.form)
+        except ValueError as e:
+            return {"error": str(e) + " in data for /answer_question"}, 400
+        try:
+            answer = Schema.YNAnswer(**data)
             db.session.add(answer)
             db.session.commit()
         except Exception as e:
             return {"error": f"Could not add answer: {str(e)}"}, 503
-        return "OK"
+        return "OK", 200
 
     @app.route("/statistics", methods=['GET'])
     def get_statistics():
@@ -90,10 +97,8 @@ def initialize_request_handlers(app, db, Schema):
                 "answer": int,
                 "topic": str,
             }, request.form)
-            if data["answer"] not in {0, 1}:
-                raise ValueError(f"Invalid answer: {data['answer']}")
         except ValueError as e:
-            return {"error": str(e) + f" in data for /{create_question}"}, 400
+            return {"error": str(e) + " in data for /create_question"}, 400
         data |= gather_and_validate_fields({"comment": str}, request.form, required=False)
         try:
             new_ynquestion = Schema.YNQuestion(**data)
