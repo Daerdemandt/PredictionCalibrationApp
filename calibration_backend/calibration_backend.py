@@ -4,9 +4,7 @@ from db_ops.entities import initialize_schema
 from statistics import to_statistics
 
 
-def initialize_request_handlers(app, db):
-    Schema = initialize_schema(db)
-
+def initialize_request_handlers(app, db, Schema):
     @app.route("/get_questions", methods=['GET'])
     def get_questions():
         page = int(request.args.get("page"))
@@ -33,8 +31,9 @@ def initialize_request_handlers(app, db):
 
     @app.route("/create_user", methods=['POST'])
     def create_user():
-        data = request.get_json()
-        new_user = Schema.User(name=data["name"])
+        if (name := request.form.get("name", type=str)) is None:
+            return {"error": "No user_id provided in post data"}, 400
+        new_user = Schema.User(name=name)
         try:
             db.session.add(new_user)
             db.session.commit()
@@ -44,7 +43,8 @@ def initialize_request_handlers(app, db):
 
     @app.route("/delete_user", methods=['DELETE'])
     def delete_user():
-        user_id = int(request.args.get("user_id"))
+        if (user_id := request.args.get("user_id", type=int)) is None:
+            return {"error": f"user_id is not provided for delete user request or could not cast to int"}, 400
         user = Schema.User.query.filter_by(user_id=user_id).one()
         try:
             db.session.delete(user)
@@ -81,5 +81,6 @@ def initialize_request_handlers(app, db):
 
 if __name__ == "__main__":
     global_app, global_db = init_app()
-    initialize_request_handlers(global_app, global_db)
+    Schema = initialize_schema(global_db)
+    initialize_request_handlers(global_app, global_db, Schema)
     global_app.run(debug=True)
