@@ -2,6 +2,7 @@ from typing import List, Iterable
 
 from calibration_backend import initialize_request_handlers
 from common.base_app import init_app
+from common.utils import dict_intersection
 from db_ops.entities import initialize_schema
 from pathlib import Path
 import pytest
@@ -62,6 +63,20 @@ def assert_user_deleted(response, userid, username, usernum):
         assert not any((u["user_id"] == userid or u["name"] == username for u in jresp["users"]))
 
 
+def assert_get_questions_correct_response(response):
+    assert response.status_code == 200
+    jresp = response.get_json()
+    assert "questions" in jresp
+    assert "page" in jresp
+    assert "has_more" in jresp
+
+
+def assert_question_in_response(questions, qdata, expected_num):
+    assert len(questions) == expected_num
+    if expected_num > 0:
+        assert exactly_one((dict_intersection(qdata, q) == qdata for q in questions))
+
+
 def test_user_interaction_happy_day(client):
     response = client.get('/get_users')
     assert_get_users_valid_response(response)
@@ -97,7 +112,51 @@ def test_user_interaction_user_id_required_when_deleting_user(client):
     assert response.status_code == 400
     response = client.get('/get_users')
     assert_user_added(response, 1, "TestUser1", 1)
-    
+
+
+def test_create_questions_happy_day(client):
+    # no actual existing user needed
+    response = client.get('/get_questions?page=1&user_id=1')
+    assert_get_questions_correct_response(response)
+    assert_question_in_response(response.get_json()["questions"], None, 0)
+    qdata = {"question": "TestQ1", "answer": 1, "topic": "integration_testing"}
+    response = client.post('/create_question', data=qdata)
+    assert response.status_code == 200
+    response = client.get('/get_questions?page=1&user_id=1')
+    assert_get_questions_correct_response(response)
+    assert_question_in_response(response.get_json()["questions"], qdata, 1)
+    qdata = {"question": "TestQ2", "answer": 0, "topic": "integration_testing"}
+    response = client.post('/create_question', data=qdata)
+    assert response.status_code == 200
+    response = client.get('/get_questions?page=1&user_id=1')
+    assert_get_questions_correct_response(response)
+    assert_question_in_response(response.get_json()["questions"], qdata, 2)
+
+
+def test_create_questions_unknown_parameters_ignored(client):
+    qdata = {"question": "TestQ1", "answer": 1, "topic": "integration_testing", "unknown_parameter": 42}
+    response = client.post('/create_question?also_unknown_parameter=test', data=qdata)
+    assert response.status_code == 200
+    response = client.get('/get_questions?page=1&user_id=1')
+    assert_get_questions_correct_response(response)
+    del qdata["unknown_parameter"]
+    assert_question_in_response(response.get_json()["questions"], qdata, 1)
+
+
+def test_create_questions_error_when_parameters_not_supplied(client):
+    response = client.post('/create_question', data={
+        "answer": 1, "topic": "integration_testing"})
+    assert response.status_code == 400
+    response = client.post('/create_question', data={
+        "question": "TestQ1", "topic": "integration_testing"})
+    assert response.status_code == 400
+    response = client.post('/create_question', data={
+        "question": "TestQ1", "answer": 1})
+    assert response.status_code == 400
+    response = client.get('/get_questions?page=1&user_id=1')
+    assert_get_questions_correct_response(response)
+    assert_question_in_response(response.get_json()["questions"], None, 0)
+
 
 if __name__ == "__main__":
     pytest.main()
