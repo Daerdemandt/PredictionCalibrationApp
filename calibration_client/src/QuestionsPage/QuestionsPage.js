@@ -1,115 +1,28 @@
 import React from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import {
-  Answer,
-  answerToString,
-  AnsweredQuestionHistory,
-  ProbabilityButtonArray,
-  DontKnowConfirmButton,
-  NDYButtonArray,
-  MainPlaque,
-} from "./QuestionsPageSubcomponents";
+import { getBlankAnswer, getAnswerReducer } from "./Answer";
+import { getBlankQuestion, questionReducer } from "./Question";
+import { AnswerHistory } from "./AnswerHistory";
+import { QuestionsAnsweringControl } from "./QuestionsAnsweringControl";
 import prettifyResponseError from "../shared/prettifyResponseError";
 import { Button } from "@material-ui/core";
 
-const getBlankAnswer = (userId) => ({
-  ynq_id: -1,
-  user_id: userId,
-  answer: Answer.INVALID,
-  probability: -1,
-  confirmed: false,
-});
-
-const questionReducer = (state, action) => {
-  switch (action.type) {
-    case "ADD":
-      return {
-        ...state,
-        loading: false,
-        error: null,
-        questions: state.questions.concat(action.payload.questions),
-        hasMore: action.payload.hasMore,
-        nextPage: state.nextPage + 1,
-      };
-    case "NEXT":
-      let newAnswered =
-        state.answeredQuestions.length > 10
-          ? state.answeredQuestions.slice(0, -1)
-          : Object.assign([], state.answeredQuestions);
-      newAnswered = [
-        {
-          userAnswer: action.payload,
-          ...state.questions[state.questions.length - 1],
-        },
-        ...newAnswered,
-      ];
-      return {
-        ...state,
-        questions: state.questions.slice(0, -1),
-        answeredQuestions: newAnswered,
-      };
-    case "ERROR":
-      return {
-        ...state,
-        loading: false,
-        error: action.payload,
-      };
-    default:
-      throw new TypeError("Illegal action in questionReducer");
+const MainPlaque = ({ questions, hasMore, error }) => {
+  if (error != null) return <h1>Ошибка при загрузке вопросов: {error}</h1>;
+  if (questions.length === 0) {
+    if (hasMore) return <h1>Загрузка...</h1>;
+    else return <h1>Вопросы закончились, попробуйте выбрать другую тему</h1>;
   }
+  let lastQuestion = questions[questions.length - 1].question;
+  return <h1>{lastQuestion}</h1>;
 };
 
-function getAnswerReducer(userId) {
-  return (state, action) => {
-    switch (action.type) {
-      case "RESET":
-        return getBlankAnswer(userId);
-      case "SET_QUESTION_ID":
-        return {
-          ...state,
-          ynq_id: action.payload,
-        };
-      case "SET_YN":
-        return {
-          ...state,
-          answer: action.payload,
-        };
-      case "SET_PROBABILITY":
-        return {
-          ...state,
-          probability: action.payload,
-        };
-      case "CONFIRM":
-        return {
-          ...state,
-          confirmed: true,
-        };
-      default:
-        throw new TypeError("Illegal action in getAnswerReducer");
-    }
-  };
-}
-
-// ---
-
-// ---
-
 export function QuestionsPage({ topic, user }) {
-  const [showProbs, setShowProbs] = React.useState(false);
-  const [showDontKnowConfirm, setShowDontKnowConfirm] = React.useState(false);
   const [showAnswered, setShowAnswered] = React.useState(false);
-
   const [questionsData, dispatchQuestionsData] = React.useReducer(
     questionReducer,
-    {
-      loading: true,
-      error: null,
-      questions: [],
-      answeredQuestions: [],
-      hasMore: true,
-      nextPage: 0,
-    }
+    getBlankQuestion()
   );
 
   const requestQuestions = React.useCallback(async () => {
@@ -151,8 +64,6 @@ export function QuestionsPage({ topic, user }) {
       axios.post("/answer_question", postData); // ignore promise for now
       dispatchQuestionsData({ type: "NEXT", payload: currentAnswer.answer });
       dispatchAnswer({ type: "RESET" });
-      setShowProbs(false);
-      setShowDontKnowConfirm(false);
     }
   }, [currentAnswer]);
 
@@ -179,42 +90,9 @@ export function QuestionsPage({ topic, user }) {
           error={questionsData.error}
         />
         {questionsData.questions.length > 0 && (
-          <NDYButtonArray
-            onAnswer={(answer) => {
-              switch (answer) {
-                case Answer.NO:
-                  dispatchAnswer({ type: "SET_YN", payload: Answer.NO });
-                  setShowProbs(true);
-                  setShowDontKnowConfirm(false);
-                  break;
-                case Answer.YES:
-                  dispatchAnswer({ type: "SET_YN", payload: Answer.YES });
-                  setShowProbs(true);
-                  setShowDontKnowConfirm(false);
-                  break;
-                case Answer.DONTKNOW:
-                  dispatchAnswer({ type: "SET_YN", payload: Answer.DONTKNOW });
-                  setShowProbs(false);
-                  setShowDontKnowConfirm(true);
-                  break;
-                default:
-                  throw new Error();
-              }
-            }}
-          />
-        )}
-        <h3>Текущий ответ: {answerToString(currentAnswer.answer)}</h3>
-        {showProbs && (
-          <ProbabilityButtonArray
-            onProbabilitySelected={(prob) => {
-              dispatchAnswer({ type: "SET_PROBABILITY", payload: prob });
-              dispatchAnswer({ type: "CONFIRM" });
-            }}
-          />
-        )}
-        {showDontKnowConfirm && (
-          <DontKnowConfirmButton
-            confirmDontKnow={() => dispatchAnswer({ type: "CONFIRM" })}
+          <QuestionsAnsweringControl
+            currentAnswer={currentAnswer}
+            dispatchAnswer={dispatchAnswer}
           />
         )}
         <hr />
@@ -226,9 +104,7 @@ export function QuestionsPage({ topic, user }) {
           Показать историю ответов
         </Button>
         {showAnswered && (
-          <AnsweredQuestionHistory
-            answeredQuestions={questionsData.answeredQuestions}
-          />
+          <AnswerHistory answeredQuestions={questionsData.answeredQuestions} />
         )}
         <hr />
         <Button variant="contained" size="large" onClick={() => navigate(-1)}>
