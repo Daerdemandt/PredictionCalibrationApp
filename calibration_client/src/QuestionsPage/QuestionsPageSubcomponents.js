@@ -1,6 +1,6 @@
 import React from "react";
 import { StyledItem, StyledColumn } from "./QuestionsPageStyle";
-import { StyledButtonSmall, StyledButtonLarge } from "../shared/SharedStyle";
+import { Button } from "@material-ui/core";
 
 export const Answer = {
   INVALID: -1,
@@ -19,15 +19,29 @@ export const answerToString = (answer) => {
 
 export const NDYButtonArray = ({ onAnswer }) => (
   <div>
-    <StyledButtonLarge onClick={() => onAnswer(Answer.NO)}>
+    <Button
+      variant="contained"
+      size="large"
+      color="secondary"
+      onClick={() => onAnswer(Answer.NO)}
+    >
       Нет
-    </StyledButtonLarge>
-    <StyledButtonLarge onClick={() => onAnswer(Answer.DONTKNOW)}>
+    </Button>
+    <Button
+      variant="contained"
+      size="large"
+      onClick={() => onAnswer(Answer.DONTKNOW)}
+    >
       Я не знаю
-    </StyledButtonLarge>
-    <StyledButtonLarge onClick={() => onAnswer(Answer.YES)}>
+    </Button>
+    <Button
+      variant="contained"
+      size="large"
+      color="primary"
+      onClick={() => onAnswer(Answer.YES)}
+    >
       Да
-    </StyledButtonLarge>
+    </Button>
   </div>
 );
 
@@ -39,12 +53,14 @@ export const ProbabilityButtonArray = ({ onProbabilitySelected }) => {
       </div>
       <div>
         {[55, 60, 65, 70, 75, 80, 85, 90, 95, 99].map((prob) => (
-          <StyledButtonSmall
+          <Button
+            variant="contained"
+            size="small"
             key={Math.round(prob)}
             onClick={() => onProbabilitySelected(prob)}
           >
             {String(Math.round(prob)) + "%"}
-          </StyledButtonSmall>
+          </Button>
         ))}
       </div>
     </>
@@ -62,9 +78,9 @@ export const DontKnowConfirmButton = ({ confirmDontKnow }) => {
         </p>
       </div>
       <div>
-        <StyledButtonSmall onClick={confirmDontKnow}>
+        <Button variant="contained" size="small" onClick={confirmDontKnow}>
           Совсем-совсем не знаю
-        </StyledButtonSmall>
+        </Button>
       </div>
     </>
   );

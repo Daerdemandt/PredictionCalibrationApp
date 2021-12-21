@@ -9,8 +9,8 @@ import {
   NDYButtonArray,
   MainPlaque,
 } from "./QuestionsPageSubcomponents";
-import { StyledButtonLarge } from "../shared/SharedStyle";
 import prettifyResponseError from "../shared/prettifyResponseError";
+import { Button } from "@material-ui/core";
 
 const getBlankAnswer = (userId) => ({
   ynq_id: -1,
@@ -213,18 +213,22 @@ export function QuestionsPage({ topic, user }) {
           />
         )}
         <hr />
-        <StyledButtonLarge onClick={() => setShowAnswered(!showAnswered)}>
+        <Button
+          variant="contained"
+          size="large"
+          onClick={() => setShowAnswered(!showAnswered)}
+        >
           Показать историю ответов
-        </StyledButtonLarge>
+        </Button>
         {showAnswered && (
           <AnsweredQuestionHistory
             answeredQuestions={questionsData.answeredQuestions}
           />
         )}
         <hr />
-        <StyledButtonLarge onClick={() => navigate(-1)}>
+        <Button variant="contained" size="large" onClick={() => navigate(-1)}>
           Назад
-        </StyledButtonLarge>
+        </Button>
       </main>
     </>
   );
