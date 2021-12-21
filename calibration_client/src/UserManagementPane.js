@@ -1,22 +1,7 @@
 import React from "react";
-import styled from "styled-components";
-import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import ConfirmDialog from "./shared/ConfirmDialog";
-import { Button } from "@material-ui/core";
-
-const StyledInput = styled.input`
-  border: none;
-  border-bottom: 1px solid #171212;
-  background-color: transparent;
-
-  font-size: 24px;
-`;
-
-const StyledLabel = styled.label`
-  padding-left: 5px;
-  font-size: 24px;
-`;
+import { Button, TextField, FormLabel } from "@material-ui/core";
 
 export function NewUserInput({ createNewUser }) {
   const [inputOk, setInputOk] = React.useState(false);
@@ -30,14 +15,9 @@ export function NewUserInput({ createNewUser }) {
   return (
     <>
       <div>
-        <StyledLabel htmlFor="newUserName">Имя:</StyledLabel>
+        <FormLabel htmlFor="newUserName">Имя:</FormLabel>
         &nbsp;
-        <StyledInput
-          id="newUserName"
-          type="text"
-          value={name}
-          onChange={validateInput}
-        />
+        <TextField id="newUserName" value={name} onChange={validateInput} />
         &nbsp;
         <Button
           variant="contained"

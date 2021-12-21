@@ -95,7 +95,7 @@ export const AnsweredQuestionHistory = ({ answeredQuestions }) => {
     );
   return (
     <div>
-      <StyledItem>
+      <StyledItem style={{ paddingTop: 15 }}>
         <StyledColumn width="30%">
           <strong>Вопрос</strong>
         </StyledColumn>
