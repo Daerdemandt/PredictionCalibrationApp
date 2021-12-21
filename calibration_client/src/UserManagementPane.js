@@ -1,10 +1,9 @@
 import React from "react";
-import { StyledButtonSmall } from "./shared/SharedStyle";
 import styled from "styled-components";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import ConfirmDialog from "./shared/ConfirmDialog";
-import { StyledButtonLarge } from "./shared/SharedStyle";
+import { Button } from "@material-ui/core";
 
 const StyledInput = styled.input`
   border: none;
@@ -40,12 +39,15 @@ export function NewUserInput({ createNewUser }) {
           onChange={validateInput}
         />
         &nbsp;
-        <StyledButtonSmall
+        <Button
+          variant="contained"
+          size="small"
+          color="primary"
           disabled={!inputOk}
           onClick={() => createNewUser(name)}
         >
           Создать
-        </StyledButtonSmall>
+        </Button>
       </div>
     </>
   );
@@ -70,11 +72,15 @@ export function UserManagementPane({
   return (
     <>
       <div style={{ paddingBottom: "5px" }}>
-        <StyledButtonLarge onClick={() => setShowNewUser(!showNewUser)}>
+        <Button
+          variant="contained"
+          size="large"
+          onClick={() => setShowNewUser(!showNewUser)}
+        >
           {showNewUser
             ? "Скрыть создание пользователя"
             : "Создать нового пользователя"}
-        </StyledButtonLarge>
+        </Button>
       </div>
       {showNewUser && (
         <div>
@@ -89,9 +95,13 @@ export function UserManagementPane({
         </div>
       )}
       <div style={{ paddingBottom: "5px" }}>
-        <StyledButtonLarge onClick={() => setShowConfirmDelete(true)}>
+        <Button
+          variant="contained"
+          size="large"
+          onClick={() => setShowConfirmDelete(true)}
+        >
           Удалить текущего пользователя
-        </StyledButtonLarge>
+        </Button>
       </div>
       {userNames.length === 0 ? (
         // This is fallback for graceful display of error.

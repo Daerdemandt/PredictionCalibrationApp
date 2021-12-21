@@ -12,11 +12,3 @@ export const StyledButton = styled.button`
     color: #ffffff;
   }
 `;
-
-export const StyledButtonSmall = styled(StyledButton)`
-  padding: 10px;
-`;
-
-export const StyledButtonLarge = styled(StyledButton)`
-  padding: 20px;
-`;

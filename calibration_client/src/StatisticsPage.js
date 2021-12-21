@@ -11,7 +11,7 @@ import {
 } from "recharts";
 import { useNavigate } from "react-router-dom";
 import prettifyResponseError from "./shared/prettifyResponseError";
-import { StyledButtonLarge } from "./shared/SharedStyle";
+import { Button } from "@material-ui/core";
 
 function ProbsLineChart({ statistics, children }) {
   return (
@@ -77,7 +77,9 @@ export function StatisticsPage({ user }) {
     return <h1>Ошибка при загрузке вопросов: {statistics.error}</h1>;
   return (
     <>
-      <StyledButtonLarge onClick={() => navigate(-1)}>Назад</StyledButtonLarge>
+      <Button variant="contained" size="large" onClick={() => navigate(-1)}>
+        Назад
+      </Button>
       <div
         style={{
           display: "flex",

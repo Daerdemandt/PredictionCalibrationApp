@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { About } from "./About";
 import { QuestionsPage } from "./QuestionsPage/QuestionsPage";
 import { StatisticsPage } from "./StatisticsPage";
-import { StyledButtonLarge } from "./shared/SharedStyle";
+import { Button } from "@material-ui/core";
 import "./App.css";
 import { NewUserInput, UserManagementPane } from "./UserManagementPane";
 import InfoAlert from "./shared/InfoAlert";
@@ -98,19 +98,32 @@ function Home({ selectedUser, setSelectedUser }) {
     return (
       <main>
         <div style={{ paddingBottom: "5px" }}>
-          <StyledButtonLarge onClick={() => navigate("/questions")}>
+          <Button
+            variant="contained"
+            size="large"
+            color="primary"
+            onClick={() => navigate("/questions")}
+          >
             Отвечать на вопросы
-          </StyledButtonLarge>
+          </Button>
         </div>
         <div style={{ paddingBottom: "5px" }}>
-          <StyledButtonLarge onClick={() => navigate("/statistics")}>
+          <Button
+            variant="contained"
+            size="large"
+            onClick={() => navigate("/statistics")}
+          >
             Статистика
-          </StyledButtonLarge>
+          </Button>
         </div>
         <div style={{ paddingBottom: "5px" }}>
-          <StyledButtonLarge onClick={() => navigate("/about")}>
+          <Button
+            variant="contained"
+            size="large"
+            onClick={() => navigate("/about")}
+          >
             Помощь
-          </StyledButtonLarge>
+          </Button>
         </div>
         <UserManagementPane
           allUsers={usersData.users}
