@@ -1,6 +1,6 @@
 import json
 from pathlib import Path
-from typing import Dict, Any
+from typing import Dict, Any, Iterable
 
 from werkzeug.datastructures import MultiDict
 
@@ -35,3 +35,13 @@ def gather_and_validate_fields(
 
 def dict_intersection(d1, d2):
     return {k: v for k, v in d1.items() if k in d2 and d2[k] == v}
+
+
+def exactly_one(iterable: Iterable):
+    result = False
+    for value in iterable:
+        if not result:
+            result |= bool(value)
+        else:
+            return False
+    return result

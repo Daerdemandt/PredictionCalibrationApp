@@ -25,4 +25,6 @@ calibration_client/yarn-error.log*
 calibration_backend/data.db
 calibration_backend/.idea
 calibration_backend/venv
+calibration_backend/.pytest_cache
+calibration_backend/integration_tests/.pytest_cache
 *.pyc
