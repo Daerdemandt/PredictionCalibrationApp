@@ -49,8 +49,8 @@ def initialize_request_handlers(app, db, Schema):
     def delete_user():
         if (user_id := request.args.get("user_id", type=int)) is None:
             return {"error": f"user_id is not provided for delete user request or could not cast to int"}, 400
-        user = Schema.User.query.filter_by(user_id=user_id).one()
         try:
+            user = Schema.User.query.filter_by(user_id=user_id).one()
             db.session.delete(user)
             db.session.commit()
         except Exception as e:
@@ -78,11 +78,8 @@ def initialize_request_handlers(app, db, Schema):
 
     @app.route("/statistics", methods=['GET'])
     def get_statistics():
-        try:
-            user_id = int(request.args.get("user_id"))
-        except:
-            print(f"Bad request for /statistics: {request.url}, no user_id")
-            return {"error": "No user provided"}, 400
+        if (user_id := request.args.get("user_id", type=int)) is None:
+            return {"error": f"user_id is not provided for statistics request or could not cast to int"}, 400
         try:
             datapoints = Schema.query_answers_statistics(user_id)
         except Exception as e:

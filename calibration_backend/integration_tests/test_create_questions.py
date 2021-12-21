@@ -1,3 +1,5 @@
+from copy import deepcopy
+
 from integration_tests.conftest import assert_get_questions_correct_response, assert_question_in_response
 
 
@@ -62,3 +64,14 @@ def test_create_questions_invalid_answer_error(client):
     response = client.get('/get_questions?page=1&user_id=1')
     assert_get_questions_correct_response(response)
     assert len(response.get_json()["questions"]) == 0
+
+
+def test_create_questions_not_enough_parameters_error(client):
+    qdata = {"question": "TestQ1", "answer": 1, "topic": "integration_testing"}
+    for key in qdata.keys():
+        qdata_tmp = deepcopy(qdata)
+        del qdata_tmp[key]
+        response = client.post('/create_question', data=qdata_tmp)
+        assert response.status_code == 400
+        response = client.get('/get_questions?page=1&user_id=1')
+        assert len(response.get_json()["questions"]) == 0

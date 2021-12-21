@@ -1,3 +1,6 @@
+from copy import deepcopy
+
+
 def test_answer_questions_happy_day(client_uq):
     response = client_uq.get('/get_questions?page=1&user_id=1')
     assert len(response.get_json()["questions"]) == 3
@@ -69,3 +72,14 @@ def test_answer_questions_duplicate_answer_error(client_uq):
     response = client_uq.post('/answer_question', data={
         "user_id": 1, "ynq_id": 1, "answer": 0, "probability": 65})
     assert response.status_code == 503  # still duplicate
+
+
+def test_answer_questions_not_enough_parameters_error(client_uq):
+    data = {"user_id": 1, "ynq_id": 1, "answer": 1, "probability": 55}
+    for key in data.keys():
+        data_tmp = deepcopy(data)
+        del data_tmp[key]
+        response = client_uq.post('/answer_question', data=data_tmp)
+        assert response.status_code == 400
+        response = client_uq.get('/get_questions?page=1&user_id=1')
+        assert len(response.get_json()["questions"]) == 3

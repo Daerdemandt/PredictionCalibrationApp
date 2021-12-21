@@ -36,3 +36,16 @@ def test_user_interaction_user_id_required_when_deleting_user(client):
     assert response.status_code == 400
     response = client.get('/get_users')
     assert_user_added(response, 1, "TestUser1", 1)
+
+
+def test_user_interaction_delete_user(client_uq):
+    response = client_uq.delete(f'/delete_user?user_id=1')
+    assert_user_deleted(response, 1, "TestUser1", 1)
+
+
+def test_user_interaction_delete_unknown_user(client_uq):
+    response = client_uq.delete(f'/delete_user?user_id=42')
+    assert response.status_code == 503
+    response = client_uq.get('/get_users')
+    assert_get_users_valid_response(response)
+    assert len(response.get_json()["users"]) == 2
