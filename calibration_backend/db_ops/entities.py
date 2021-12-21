@@ -85,7 +85,7 @@ def initialize_schema(db):
 
             @validates('user_id')
             def validate_user_id(self, key, user_id):
-                if not Schema.YNQuestion.query.filter(Schema.User.user_id == user_id).first():
+                if not Schema.User.query.filter(Schema.User.user_id == user_id).first():
                     raise AssertionError('Answer to question for unknown user')
                 return user_id
 
