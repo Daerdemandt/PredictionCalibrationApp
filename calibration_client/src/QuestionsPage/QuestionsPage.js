@@ -184,13 +184,16 @@ export function QuestionsPage({ topic, user }) {
                 case Answer.NO:
                   dispatchAnswer({ type: "SET_YN", payload: Answer.NO });
                   setShowProbs(true);
+                  setShowDontKnowConfirm(false);
                   break;
                 case Answer.YES:
                   dispatchAnswer({ type: "SET_YN", payload: Answer.YES });
                   setShowProbs(true);
+                  setShowDontKnowConfirm(false);
                   break;
                 case Answer.DONTKNOW:
                   dispatchAnswer({ type: "SET_YN", payload: Answer.DONTKNOW });
+                  setShowProbs(false);
                   setShowDontKnowConfirm(true);
                   break;
                 default:
