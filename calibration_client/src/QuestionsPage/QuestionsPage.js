@@ -3,6 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import {
   Answer,
+  answerToString,
   AnsweredQuestionHistory,
   ProbabilityButtonArray,
   DontKnowConfirmButton,
@@ -15,7 +16,7 @@ import { Button } from "@material-ui/core";
 const getBlankAnswer = (userId) => ({
   ynq_id: -1,
   user_id: userId,
-  answer: null,
+  answer: Answer.INVALID,
   probability: -1,
   confirmed: false,
 });
@@ -202,6 +203,7 @@ export function QuestionsPage({ topic, user }) {
             }}
           />
         )}
+        <h3>Текущий ответ: {answerToString(currentAnswer.answer)}</h3>
         {showProbs && (
           <ProbabilityButtonArray
             onProbabilitySelected={(prob) => {

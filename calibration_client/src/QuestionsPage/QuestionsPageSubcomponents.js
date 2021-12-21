@@ -14,6 +14,7 @@ export const answerToString = (answer) => {
   if (answer === 0 || answer === false) return "Нет";
   else if (answer === 1 || answer === true) return "Да";
   else if (answer === 2) return "Не знаю";
+  else if (answer === -1) return "Нет ответа";
   throw new Error(`Unknown answer ${answer}`);
 };
 
