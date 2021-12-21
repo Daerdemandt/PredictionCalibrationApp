@@ -18,6 +18,14 @@ const MainPlaque = ({ questions, hasMore, error }) => {
   return <h1>{lastQuestion}</h1>;
 };
 
+const shouldRequestMoreQuestions = (questionsData) => {
+  return (
+    questionsData.error == null &&
+    questionsData.questions.length <= 1 &&
+    questionsData.hasMore
+  );
+};
+
 export function QuestionsPage({ topic, user }) {
   const [showAnswered, setShowAnswered] = React.useState(false);
   const [questionsData, dispatchQuestionsData] = React.useReducer(
@@ -26,11 +34,7 @@ export function QuestionsPage({ topic, user }) {
   );
 
   const requestQuestions = React.useCallback(async () => {
-    if (
-      questionsData.error == null &&
-      questionsData.questions.length <= 1 &&
-      questionsData.hasMore
-    ) {
+    if (shouldRequestMoreQuestions(questionsData)) {
       try {
         let url = `/get_questions?page=${questionsData.nextPage}&user_id=${user.user_id}`;
         const result = await axios.get(url);
