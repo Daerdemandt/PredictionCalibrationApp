@@ -35,7 +35,7 @@ def initialize_request_handlers(app, db, Schema):
 
     @app.route("/create_user", methods=['POST'])
     def create_user():
-        if (name := request.form.get("name", type=str)) is None:
+        if (name := request.json.get("name")) is None:
             return {"error": "No user_id provided in post data"}, 400
         new_user = Schema.User(name=name)
         try:
@@ -65,7 +65,7 @@ def initialize_request_handlers(app, db, Schema):
                 "ynq_id": int,
                 "answer": int,
                 "probability": int,
-            }, request.form)
+            }, request.json)
         except ValueError as e:
             return {"error": str(e) + " in data for /answer_question"}, 400
         try:
@@ -93,10 +93,10 @@ def initialize_request_handlers(app, db, Schema):
                 "question": str,
                 "answer": int,
                 "topic": str,
-            }, request.form)
+            }, request.json)
         except ValueError as e:
             return {"error": str(e) + " in data for /create_question"}, 400
-        data |= gather_and_validate_fields({"comment": str}, request.form, required=False)
+        data |= gather_and_validate_fields({"comment": str}, request.json, required=False)
         try:
             new_ynquestion = Schema.YNQuestion(**data)
             db.session.add(new_ynquestion)

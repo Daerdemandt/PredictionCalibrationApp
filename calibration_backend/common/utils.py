@@ -22,14 +22,19 @@ def make_to_dict_clsfn(field_list):
 
 
 def gather_and_validate_fields(
-        expected: Dict[str, type], raw_data: MultiDict[str, Any], /, required=True):
+        expected: Dict[str, type], raw_data: Dict[str, Any], /, required=True):
     clean_data = {}
     for field, expected_type in expected.items():
-        if (val := raw_data.get(field, default=None, type=expected_type)) is None:
+        try:
+            if (val := raw_data.get(field)) is None:
+                raise ValueError("not present")
+            val = expected_type(val)
+        except Exception as e:
             if required:
-                raise ValueError(f"No {field!r} provided (or could not convert)")
-        else:
-            clean_data[field] = val
+                raise ValueError(f"No {field!r} provided ({e!r})")
+            else:
+                continue
+        clean_data[field] = val
     return clean_data
 
 

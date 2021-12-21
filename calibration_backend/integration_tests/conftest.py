@@ -31,13 +31,13 @@ def client(app_db):
 
 @pytest.fixture(scope="function")
 def client_uq(client):
-    _ = client.post('/create_user', data={"name": "TestUser1"})
-    _ = client.post('/create_user', data={"name": "TestUser2"})
-    _ = client.post('/create_question', data={
+    _ = client.post('/create_user', json={"name": "TestUser1"})
+    _ = client.post('/create_user', json={"name": "TestUser2"})
+    _ = client.post('/create_question', json={
         "question": "TestQ1", "answer": 1, "topic": "integration_testing"})
-    _ = client.post('/create_question', data={
+    _ = client.post('/create_question', json={
         "question": "TestQ2", "answer": 0, "topic": "integration_testing"})
-    _ = client.post('/create_question', data={
+    _ = client.post('/create_question', json={
         "question": "TestQ3", "answer": 1, "topic": "more_testing"})
     yield client
 
