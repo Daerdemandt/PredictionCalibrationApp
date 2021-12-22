@@ -1,7 +1,7 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import { About } from "./About";
+import { HelpPage } from "./HelpPage";
 import { QuestionsPage } from "./QuestionsPage/QuestionsPage";
 import { StatisticsPage } from "./StatisticsPage";
 import { Button } from "@material-ui/core";
@@ -151,7 +151,7 @@ function App() {
   );
 
   return (
-    <div className="App">
+    <div style={{ textAlign: "center", justifyContent: "center" }}>
       <h1>Калибровка уверенности</h1>
       <Routes>
         <Route
@@ -171,7 +171,7 @@ function App() {
           path="/statistics"
           element={<StatisticsPage user={selectedUser} />}
         />
-        <Route path="/about" element={<About />} />
+        <Route path="/about" element={<HelpPage />} />
       </Routes>
     </div>
   );
