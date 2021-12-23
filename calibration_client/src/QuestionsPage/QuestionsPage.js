@@ -5,7 +5,7 @@ import { getBlankAnswer, getAnswerReducer } from "./Answer";
 import { getBlankQuestion, questionReducer } from "./Question";
 import { QuestionsAnsweringControl } from "./QuestionsAnsweringControl";
 import prettifyResponseError from "../shared/prettifyResponseError";
-import { Button } from "@material-ui/core";
+import { Button, Typography } from "@material-ui/core";
 
 const MainPlaque = ({ questions, hasMore, error }) => {
   if (error != null) return <h1>Ошибка при загрузке вопросов: {error}</h1>;
@@ -83,9 +83,14 @@ export function QuestionsPage({ topic, user }) {
 
   return (
     <>
+      <nav>
+        <Button variant="contained" size="large" onClick={() => navigate(-1)}>
+          Назад
+        </Button>
+      </nav>
       <main>
-        <h3>Тема: {topic}</h3>
-        <h3>Пользователь: {user.name}</h3>
+        <Typography variant="h6">Тема: {topic}</Typography>
+        <Typography variant="h6">Пользователь: {user.name}</Typography>
         <MainPlaque
           questions={questionsData.questions}
           hasMore={questionsData.hasMore}
@@ -98,11 +103,6 @@ export function QuestionsPage({ topic, user }) {
           />
         )}
       </main>
-      <nav>
-        <Button variant="contained" size="large" onClick={() => navigate(-1)}>
-          Назад
-        </Button>
-      </nav>
     </>
   );
 }
