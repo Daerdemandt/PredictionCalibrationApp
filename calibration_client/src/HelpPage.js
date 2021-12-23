@@ -8,6 +8,16 @@ export function HelpPage() {
   };
   return (
     <>
+      <nav>
+        <Button
+          style={style}
+          variant="contained"
+          size="large"
+          onClick={() => navigate(-1)}
+        >
+          Назад
+        </Button>
+      </nav>
       <main style={{ textAlign: "left" }}>
         <Typography style={style} variant="h3">
           Для чего это приложение
@@ -403,11 +413,6 @@ export function HelpPage() {
           </ol>
         </Typography>
       </main>
-      <nav>
-        <Button variant="contained" size="large" onClick={() => navigate(-1)}>
-          Назад
-        </Button>
-      </nav>
     </>
   );
 }
