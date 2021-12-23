@@ -38,8 +38,25 @@ def client_uq(client):
     _ = client.post('/create_question', json={
         "question": "TestQ2", "answer": 0, "topic": "integration_testing"})
     _ = client.post('/create_question', json={
-        "question": "TestQ3", "answer": 1, "topic": "more_testing"})
+        "question": "TestQ3", "answer": 1, "topic": "more_testing", "comment": "test_comment"})
+    _ = client.post('/create_question', json={
+        "question": "TestQ4", "answer": 0, "topic": "more_testing"})
+    _ = client.post('/create_question', json={
+        "question": "TestQ5", "answer": 0, "topic": "even_more_testing"})
     yield client
+
+
+@pytest.fixture(scope="function")
+def client_uqa(client_uq):
+    _ = client_uq.post('/answer_question', json={
+        "user_id": 1, "ynq_id": 1, "answer": 0, "probability": 55})
+    _ = client_uq.post('/answer_question', json={
+        "user_id": 1, "ynq_id": 2, "answer": 0, "probability": 55})
+    _ = client_uq.post('/answer_question', json={
+        "user_id": 1, "ynq_id": 3, "answer": 1, "probability": 99})
+    _ = client_uq.post('/answer_question', json={
+        "user_id": 1, "ynq_id": 5, "answer": 2, "probability": -1})
+    yield client_uq
 
 
 def assert_get_users_valid_response(response):

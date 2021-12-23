@@ -16,14 +16,8 @@ def test_statistics_empty_stats(client_uq):
         assert chunk["total_correct"] == 0
 
 
-def test_statistics_happy_day(client_uq):
-    _ = client_uq.post('/answer_question', json={
-        "user_id": 1, "ynq_id": 1, "answer": 0, "probability": 55})
-    _ = client_uq.post('/answer_question', json={
-        "user_id": 1, "ynq_id": 2, "answer": 0, "probability": 55})
-    _ = client_uq.post('/answer_question', json={
-        "user_id": 1, "ynq_id": 3, "answer": 1, "probability": 99})
-    response = client_uq.get("/statistics?user_id=1")
+def test_statistics_happy_day(client_uqa):
+    response = client_uqa.get("/statistics?user_id=1")
     assert_valid_statistics_response(response)
     for chunk in response.get_json()["statistics"]:
         if chunk["probability_quotient"] == 55:

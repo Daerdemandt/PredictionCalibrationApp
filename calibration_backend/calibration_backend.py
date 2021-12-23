@@ -86,6 +86,16 @@ def initialize_request_handlers(app, db, Schema):
             return {"error": f"Could not query statistics data: {str(e)}"}, 503
         return {"statistics": to_statistics(datapoints)}
 
+    @app.route("/get_answers", methods=['GET'])
+    def get_answers():
+        if (user_id := request.args.get("user_id", type=int)) is None:
+            return {"error": f"user_id is not provided for get_answers request or could not cast to int"}, 400
+        try:
+            result = Schema.query_answers(user_id)
+        except Exception as e:
+            return {"error": f"Could not query answers data: {str(e)}"}, 503
+        return {"answers": result}
+
     @app.route("/create_question", methods=['POST'])
     def create_question():
         try:
