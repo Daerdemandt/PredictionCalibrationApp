@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { HelpPage } from "./HelpPage";
 import { QuestionsPage } from "./QuestionsPage/QuestionsPage";
 import { StatisticsPage } from "./StatisticsPage";
-import { Button } from "@material-ui/core";
+import { Button, Typography } from "@material-ui/core";
 import "./App.css";
 import { NewUserInput, UserManagementPane } from "./UserManagementPane";
 import InfoAlert from "./shared/InfoAlert";
@@ -160,7 +160,14 @@ function App() {
         justifyContent: "center",
       }}
     >
-      <h1>Калибровка уверенности</h1>
+      <Typography
+        style={{
+          paddingBottom: "15px",
+        }}
+        variant="h2"
+      >
+        Калибровка уверенности
+      </Typography>
       <Routes>
         <Route
           path="/"
