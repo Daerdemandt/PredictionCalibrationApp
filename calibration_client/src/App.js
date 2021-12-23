@@ -99,6 +99,16 @@ function Home({ selectedUser, setSelectedUser }) {
       <main>
         <div style={{ paddingBottom: "5px" }}>
           <Button
+            color="secondary"
+            variant="contained"
+            size="large"
+            onClick={() => navigate("/help")}
+          >
+            Помощь
+          </Button>
+        </div>
+        <div style={{ paddingBottom: "5px" }}>
+          <Button
             variant="contained"
             size="large"
             color="primary"
@@ -114,15 +124,6 @@ function Home({ selectedUser, setSelectedUser }) {
             onClick={() => navigate("/statistics")}
           >
             Статистика
-          </Button>
-        </div>
-        <div style={{ paddingBottom: "5px" }}>
-          <Button
-            variant="contained"
-            size="large"
-            onClick={() => navigate("/about")}
-          >
-            Помощь
           </Button>
         </div>
         <UserManagementPane
@@ -171,7 +172,7 @@ function App() {
           path="/statistics"
           element={<StatisticsPage user={selectedUser} />}
         />
-        <Route path="/about" element={<HelpPage />} />
+        <Route path="/help" element={<HelpPage />} />
       </Routes>
     </div>
   );
