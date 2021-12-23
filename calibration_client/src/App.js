@@ -152,7 +152,14 @@ function App() {
   );
 
   return (
-    <div style={{ textAlign: "center", justifyContent: "center" }}>
+    <div
+      style={{
+        width: 920,
+        margin: "auto",
+        textAlign: "center",
+        justifyContent: "center",
+      }}
+    >
       <h1>Калибровка уверенности</h1>
       <Routes>
         <Route

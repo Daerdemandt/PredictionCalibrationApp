@@ -8,13 +8,7 @@ export function HelpPage() {
   };
   return (
     <>
-      <main
-        style={{
-          textAlign: "left",
-          width: 920,
-          margin: "auto",
-        }}
-      >
+      <main style={{ textAlign: "left" }}>
         <Typography style={style} variant="h3">
           Для чего это приложение
         </Typography>
