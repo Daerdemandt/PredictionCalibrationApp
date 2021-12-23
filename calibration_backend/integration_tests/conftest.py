@@ -87,8 +87,6 @@ def assert_get_questions_correct_response(response):
     assert response.status_code == 200
     jresp = response.get_json()
     assert "questions" in jresp
-    assert "page" in jresp
-    assert "has_more" in jresp
 
 
 def assert_question_in_response(questions, qdata, expected_num):

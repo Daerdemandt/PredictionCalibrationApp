@@ -1,5 +1,3 @@
-from typing import Dict
-
 from flask import request
 from common.base_app import init_app
 from common.utils import gather_and_validate_fields
@@ -11,19 +9,12 @@ def initialize_request_handlers(app, db, Schema):
     @app.route("/get_questions", methods=['GET'])
     def get_questions():
         try:
-            data = gather_and_validate_fields({
-                "page": int,
-                "user_id": int,
-            }, request.args)
+            data = gather_and_validate_fields({"user_id": int}, request.args)
         except ValueError as e:
             return {"error": str(e) + f"in data for /{create_question}"}, 400
         questions = Schema.query_remaining_questions(data["user_id"])
         questions_payload = [q.to_dict() for q in questions]
-        return {
-            "questions": questions_payload,
-            "page": data["page"],
-            "has_more": False
-        }
+        return {"questions": questions_payload}
 
     @app.route("/get_users", methods=['GET'])
     def get_users():

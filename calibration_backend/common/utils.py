@@ -2,10 +2,9 @@ import json
 from pathlib import Path
 from typing import Dict, Any, Iterable
 
-from werkzeug.datastructures import MultiDict
 
 VALID_PROBABILITY_QUANTS = [-1] + list(range(55, 100, 5)) + [99]
-PAGE_SIZE = 5
+QUESTIONS_PAGE_LIMIT = 10
 PROJECT_ROOT = Path(__file__).parent.parent
 
 

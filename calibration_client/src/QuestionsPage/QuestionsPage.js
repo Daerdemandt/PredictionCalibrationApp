@@ -34,13 +34,13 @@ export function QuestionsPage({ topic, user }) {
   const requestQuestions = React.useCallback(async () => {
     if (shouldRequestMoreQuestions(questionsData)) {
       try {
-        let url = `/get_questions?page=${questionsData.nextPage}&user_id=${user.user_id}`;
+        let url = `/get_questions?user_id=${user.user_id}`;
         const result = await axios.get(url);
         dispatchQuestionsData({
           type: "ADD",
           payload: {
             questions: result.data.questions,
-            hasMore: result.data.has_more,
+            hasMore: result.data.questions.length !== 0,
           },
         });
       } catch (error) {

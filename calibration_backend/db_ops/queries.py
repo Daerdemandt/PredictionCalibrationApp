@@ -1,3 +1,6 @@
+from common.utils import QUESTIONS_PAGE_LIMIT
+
+
 def construct_remaining_questions_query(db, YNQuestion, YNAnswer):
     def query_remaining_questions(user_id):
         answered_questions_for_user_q = YNAnswer.query \
@@ -6,7 +9,7 @@ def construct_remaining_questions_query(db, YNQuestion, YNAnswer):
         remaining_questions_for_user_q = db.session.query(YNQuestion) \
             .outerjoin(answered_questions_for_user_q) \
             .filter_by(answer=None)
-        questions = remaining_questions_for_user_q.all()
+        questions = remaining_questions_for_user_q.limit(QUESTIONS_PAGE_LIMIT).all()
         return questions
     return query_remaining_questions
 

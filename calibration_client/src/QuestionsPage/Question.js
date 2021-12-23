@@ -1,13 +1,25 @@
+function filterDuplicates(newQs, filterQs) {
+  return newQs.filter((newQ) => {
+    return (
+      filterQs.find((filterQ) => filterQ.question === newQ.question) == null
+    );
+  });
+}
+
 export const questionReducer = (state, action) => {
   switch (action.type) {
     case "ADD":
+      // Some questions will still be present here in state.questions as cache
+      let newQuestions = filterDuplicates(
+        action.payload.questions,
+        state.questions
+      );
       return {
         ...state,
         loading: false,
         error: null,
-        questions: state.questions.concat(action.payload.questions),
+        questions: newQuestions.concat(state.questions),
         hasMore: action.payload.hasMore,
-        nextPage: state.nextPage + 1,
       };
     case "NEXT":
       return {
@@ -30,5 +42,4 @@ export const getBlankQuestion = () => ({
   error: null,
   questions: [],
   hasMore: true,
-  nextPage: 0,
 });
