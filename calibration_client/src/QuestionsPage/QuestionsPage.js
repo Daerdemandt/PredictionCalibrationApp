@@ -3,7 +3,6 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { getBlankAnswer, getAnswerReducer } from "./Answer";
 import { getBlankQuestion, questionReducer } from "./Question";
-import { AnswerHistory } from "./AnswerHistory";
 import { QuestionsAnsweringControl } from "./QuestionsAnsweringControl";
 import prettifyResponseError from "../shared/prettifyResponseError";
 import { Button } from "@material-ui/core";
@@ -27,7 +26,6 @@ const shouldRequestMoreQuestions = (questionsData) => {
 };
 
 export function QuestionsPage({ topic, user }) {
-  const [showAnswered, setShowAnswered] = React.useState(false);
   const [questionsData, dispatchQuestionsData] = React.useReducer(
     questionReducer,
     getBlankQuestion()
@@ -99,18 +97,6 @@ export function QuestionsPage({ topic, user }) {
             dispatchAnswer={dispatchAnswer}
           />
         )}
-        <hr />
-        <Button
-          variant="contained"
-          size="large"
-          onClick={() => setShowAnswered(!showAnswered)}
-        >
-          Показать историю ответов
-        </Button>
-        {showAnswered && (
-          <AnswerHistory answeredQuestions={questionsData.answeredQuestions} />
-        )}
-        <hr />
         <Button variant="contained" size="large" onClick={() => navigate(-1)}>
           Назад
         </Button>

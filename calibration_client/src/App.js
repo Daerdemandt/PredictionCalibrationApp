@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { HelpPage } from "./HelpPage";
 import { QuestionsPage } from "./QuestionsPage/QuestionsPage";
 import { StatisticsPage } from "./StatisticsPage";
+import { AnswerHistory } from "./AnswerHistory";
 import { Button, Typography } from "@material-ui/core";
 import "./App.css";
 import { NewUserInput, UserManagementPane } from "./UserManagementPane";
@@ -126,6 +127,15 @@ function Home({ selectedUser, setSelectedUser }) {
             Статистика
           </Button>
         </div>
+        <div style={{ paddingBottom: "5px" }}>
+          <Button
+            variant="contained"
+            size="large"
+            onClick={() => navigate("/history")}
+          >
+            История ответов
+          </Button>
+        </div>
         <UserManagementPane
           allUsers={usersData.users}
           selectedUser={selectedUser}
@@ -185,6 +195,10 @@ function App() {
         <Route
           path="/statistics"
           element={<StatisticsPage user={selectedUser} />}
+        />
+        <Route
+          path="/history"
+          element={<AnswerHistory user={selectedUser} />}
         />
         <Route path="/help" element={<HelpPage />} />
       </Routes>
