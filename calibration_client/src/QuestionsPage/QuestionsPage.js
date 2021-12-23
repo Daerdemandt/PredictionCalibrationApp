@@ -97,10 +97,12 @@ export function QuestionsPage({ topic, user }) {
             dispatchAnswer={dispatchAnswer}
           />
         )}
+      </main>
+      <nav>
         <Button variant="contained" size="large" onClick={() => navigate(-1)}>
           Назад
         </Button>
-      </main>
+      </nav>
     </>
   );
 }
