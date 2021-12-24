@@ -29,6 +29,9 @@ export const AnswerHistoryTable = ({ answerHistory }) => {
                 <strong>Ваш ответ</strong>
               </TableCell>
               <TableCell align="center">
+                <strong>Вероятность</strong>
+              </TableCell>
+              <TableCell align="center">
                 <strong>На самом деле</strong>
               </TableCell>
               <TableCell align="center">
@@ -47,6 +50,9 @@ export const AnswerHistoryTable = ({ answerHistory }) => {
                 </TableCell>
                 <TableCell align="center">
                   {answerToString(answer.user_answer)}
+                </TableCell>
+                <TableCell align="center">
+                  {answer.probability === -1 ? 50 : answer.probability}
                 </TableCell>
                 <TableCell align="center">
                   {answerToString(answer.real_answer)}

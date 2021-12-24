@@ -7,7 +7,7 @@ def assert_valid_get_answers_response(response):
     assert "answers" in jresp
     for chunk in jresp["answers"]:
         assert all((field in chunk.keys() for field in {
-            "question", "user_answer", "real_answer", "comment", }))
+            "question", "user_answer", "probability", "real_answer", "comment", }))
 
 
 def find_result_by_name(answers, name):
@@ -31,24 +31,28 @@ def test_get_answers_happy_day(client_uqa):
     assert_values_equal(answer_record, {
         "real_answer": True,
         "user_answer": 0,
+        "probability": 55,
         "comment": "",
     })
     answer_record = find_result_by_name(answers, "TestQ2")
     assert_values_equal(answer_record, {
         "real_answer": False,
         "user_answer": 0,
+        "probability": 55,
         "comment": "",
     })
     answer_record = find_result_by_name(answers, "TestQ3")
     assert_values_equal(answer_record, {
         "real_answer": True,
         "user_answer": 1,
+        "probability": 99,
         "comment": "test_comment",
     })
     answer_record = find_result_by_name(answers, "TestQ5")
     assert_values_equal(answer_record, {
         "real_answer": False,
         "user_answer": 2,
+        "probability": -1,
         "comment": "",
     })
 

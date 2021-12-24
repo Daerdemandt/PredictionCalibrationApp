@@ -32,6 +32,7 @@ def construct_answers_query(db, YNQuestion, YNAnswer):
     result_labeling = [
         "question",
         "user_answer",
+        "probability",
         "real_answer",
         "comment",
     ]
@@ -46,6 +47,7 @@ def construct_answers_query(db, YNQuestion, YNAnswer):
         comparisons_for_user_q = db.session.query(
             YNQuestion.question,
             answered_questions_for_user_q.c.answer,
+            answered_questions_for_user_q.c.probability,
             YNQuestion.answer,
             YNQuestion.comment) \
             .join(answered_questions_for_user_q)
