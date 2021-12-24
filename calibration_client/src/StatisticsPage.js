@@ -13,7 +13,7 @@ import { useNavigate } from "react-router-dom";
 import prettifyResponseError from "./shared/prettifyResponseError";
 import { Button } from "@material-ui/core";
 
-function ProbsLineChart({ statistics, children }) {
+function ProbsLineChart({ datapoints, children }) {
   return (
     <div
       style={{
@@ -25,7 +25,7 @@ function ProbsLineChart({ statistics, children }) {
       <LineChart
         width={window.innerWidth * 0.7}
         height={window.innerHeight * 0.8}
-        data={statistics.statistics}
+        data={datapoints}
         margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
       >
         <XAxis
@@ -44,6 +44,47 @@ function ProbsLineChart({ statistics, children }) {
     </div>
   );
 }
+
+const toDisplayableDatapoints = (statistics, granularityLevel) => {
+  const granularity = [
+    { low: 50, high: 58, display: 55 },
+    { low: 58, high: 63, display: 60 },
+    { low: 63, high: 68, display: 65 },
+    { low: 68, high: 73, display: 70 },
+    { low: 73, high: 78, display: 75 },
+    { low: 78, high: 83, display: 80 },
+    { low: 83, high: 88, display: 85 },
+    { low: 88, high: 93, display: 90 },
+    { low: 93, high: 98, display: 95 },
+    { low: 98, high: 100, display: 99 },
+  ];
+  const groupedDatapoints = new Map();
+  granularity.forEach((split) => {
+    groupedDatapoints.set(split.display, []);
+  });
+  statistics.forEach((dp) => {
+    granularity.forEach((split) => {
+      if (split.low <= dp.probability && dp.probability < split.high)
+        groupedDatapoints.get(split.display).push(dp);
+    });
+  });
+  const numberOfCorrectAnswers = (datapoints) => {
+    return datapoints.filter((dp) => dp.real_answer === dp.user_answer).length;
+  };
+  const result = [];
+  groupedDatapoints.forEach((values, probability_quotient) => {
+    result.push({
+      probability_quotient: probability_quotient,
+      total: values.length,
+      total_correct: numberOfCorrectAnswers(values),
+      correct_percent:
+        values.length > 0
+          ? (100 * numberOfCorrectAnswers(values)) / values.length
+          : null,
+    });
+  });
+  return result;
+};
 
 export function StatisticsPage({ user }) {
   const [statistics, setStatistics] = React.useState({
@@ -72,6 +113,7 @@ export function StatisticsPage({ user }) {
     requestStatistics();
   }, [requestStatistics]);
   const navigate = useNavigate();
+  const displayableDatapoints = toDisplayableDatapoints(statistics.statistics);
 
   if (statistics.error != null)
     return <h1>Ошибка при загрузке вопросов: {statistics.error}</h1>;
@@ -87,7 +129,7 @@ export function StatisticsPage({ user }) {
           justifyContent: "center",
         }}
       >
-        <ProbsLineChart statistics={statistics}>
+        <ProbsLineChart datapoints={displayableDatapoints}>
           <YAxis
             label={{
               value: "Действительное количество верных ответов (%)",
@@ -117,7 +159,7 @@ export function StatisticsPage({ user }) {
           justifyContent: "center",
         }}
       >
-        <ProbsLineChart statistics={statistics}>
+        <ProbsLineChart datapoints={displayableDatapoints}>
           <YAxis
             label={{
               value: "Количество вопросов",
