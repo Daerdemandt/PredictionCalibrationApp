@@ -45,25 +45,41 @@ function ProbsLineChart({ datapoints, children }) {
   );
 }
 
+const granularity2 = [
+  { low: 50, high: 58, display: 55 },
+  { low: 58, high: 63, display: 60 },
+  { low: 63, high: 68, display: 65 },
+  { low: 68, high: 73, display: 70 },
+  { low: 73, high: 78, display: 75 },
+  { low: 78, high: 83, display: 80 },
+  { low: 83, high: 88, display: 85 },
+  { low: 88, high: 93, display: 90 },
+  { low: 93, high: 98, display: 95 },
+  { low: 98, high: 100, display: 99 },
+];
+
+const granularity1 = [
+  { low: 50, high: 65, display: 60 },
+  { low: 65, high: 75, display: 70 },
+  { low: 75, high: 85, display: 80 },
+  { low: 85, high: 92, display: 90 },
+  { low: 93, high: 100, display: 95 },
+];
+
+const granularity0 = [
+  { low: 50, high: 72, display: 60 },
+  { low: 72, high: 88, display: 80 },
+  { low: 88, high: 100, display: 95 },
+];
+
 const toDisplayableDatapoints = (statistics, granularityLevel) => {
-  const granularity = [
-    { low: 50, high: 58, display: 55 },
-    { low: 58, high: 63, display: 60 },
-    { low: 63, high: 68, display: 65 },
-    { low: 68, high: 73, display: 70 },
-    { low: 73, high: 78, display: 75 },
-    { low: 78, high: 83, display: 80 },
-    { low: 83, high: 88, display: 85 },
-    { low: 88, high: 93, display: 90 },
-    { low: 93, high: 98, display: 95 },
-    { low: 98, high: 100, display: 99 },
-  ];
+  const granularity = [granularity0, granularity1, granularity2];
   const groupedDatapoints = new Map();
-  granularity.forEach((split) => {
+  granularity[granularityLevel].forEach((split) => {
     groupedDatapoints.set(split.display, []);
   });
   statistics.forEach((dp) => {
-    granularity.forEach((split) => {
+    granularity[granularityLevel].forEach((split) => {
       if (split.low <= dp.probability && dp.probability < split.high)
         groupedDatapoints.get(split.display).push(dp);
     });
@@ -79,7 +95,7 @@ const toDisplayableDatapoints = (statistics, granularityLevel) => {
       total_correct: numberOfCorrectAnswers(values),
       correct_percent:
         values.length > 0
-          ? (100 * numberOfCorrectAnswers(values)) / values.length
+          ? ((100 * numberOfCorrectAnswers(values)) / values.length).toFixed(2)
           : null,
     });
   });
@@ -112,8 +128,14 @@ export function StatisticsPage({ user }) {
   React.useEffect(() => {
     requestStatistics();
   }, [requestStatistics]);
+
+  const [granularity, setGranularity] = React.useState(2);
+  const displayableDatapoints = toDisplayableDatapoints(
+    statistics.statistics,
+    granularity
+  );
+
   const navigate = useNavigate();
-  const displayableDatapoints = toDisplayableDatapoints(statistics.statistics);
 
   if (statistics.error != null)
     return <h1>Ошибка при загрузке вопросов: {statistics.error}</h1>;
@@ -121,6 +143,22 @@ export function StatisticsPage({ user }) {
     <>
       <Button variant="contained" size="large" onClick={() => navigate(-1)}>
         Назад
+      </Button>
+      <Button
+        variant="contained"
+        size="large"
+        onClick={() => {
+          if (granularity === 0) setGranularity(2);
+          else setGranularity(granularity - 1);
+        }}
+      >
+        {
+          [
+            "Вернуть изначальную гранулярность",
+            "Ещё меньше гранулярности",
+            "Меньше гранулярности",
+          ][granularity]
+        }
       </Button>
       <div
         style={{
