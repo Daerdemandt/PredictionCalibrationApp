@@ -15,14 +15,17 @@ class AnswerDatapoint:
 
 
 def number_of_correct_answers(dpts: List[AnswerDatapoint]):
-    return len([dp for dp in dpts if dp.real_answer == dp.user_answer])
+    return len([dp for dp in dpts if dp["real_answer"] == dp["user_answer"]])
 
 
 def to_statistics(datapoints):
-    datapoints = [AnswerDatapoint.from_tuple(r) for r in datapoints if (r[1] == 0 or r[1] == 1)]
+    datapoints = [{"real_answer": dp["real_answer"],
+                   "user_answer": bool(dp["user_answer"]),
+                   "probability": dp["probability"]}
+                  for dp in datapoints if dp["user_answer"] in {0, 1}]
     grouped_datapoints = {pq: [] for pq in VALID_PROBABILITY_QUANTS[1:]}
     for datapoint in datapoints:
-        grouped_datapoints[datapoint.probability].append(datapoint)
+        grouped_datapoints[datapoint["probability"]].append(datapoint)
 
     return [{
         "probability_quotient": pq,

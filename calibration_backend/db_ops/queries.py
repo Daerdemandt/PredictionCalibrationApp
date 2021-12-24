@@ -11,45 +11,32 @@ def construct_remaining_questions_query(db, YNQuestion, YNAnswer):
             .filter_by(answer=None)
         questions = remaining_questions_for_user_q.limit(QUESTIONS_PAGE_LIMIT).all()
         return questions
+
     return query_remaining_questions
 
 
-def construct_answers_statistics_query(db, YNQuestion, YNAnswer):
+def construct_answers_statistics_query(db, YNQuestion, YNAnswer, /, with_text_data):
     def query_answers_statistics(user_id):
         answered_questions_for_user_q = db.session.query(YNAnswer) \
             .filter_by(user_id=user_id) \
             .subquery()
-        comparisons_for_user_q = db.session.query(
-            YNQuestion.answer,
-            answered_questions_for_user_q.c.answer,
-            answered_questions_for_user_q.c.probability) \
+        result_select = [
+            YNQuestion.answer.label("real_answer"),
+            answered_questions_for_user_q.c.answer.label("user_answer"),
+            answered_questions_for_user_q.c.probability.label("probability")
+        ]
+        if with_text_data:
+            result_select.extend([
+                YNQuestion.question.label("question"),
+                YNQuestion.comment.label("comment")
+            ])
+        comparisons_for_user_q = db.session.query(*result_select) \
             .join(answered_questions_for_user_q)
-        return comparisons_for_user_q.all()
+        human_readable_names = [c["name"] for c in comparisons_for_user_q.column_descriptions]
+
+        def to_dict(tup):
+            return {k: v for (k, v) in zip(human_readable_names, tup, strict=True)}
+
+        return [to_dict(tup) for tup in comparisons_for_user_q.all()]
+
     return query_answers_statistics
-
-
-def construct_answers_query(db, YNQuestion, YNAnswer):
-    result_labeling = [
-        "question",
-        "user_answer",
-        "probability",
-        "real_answer",
-        "comment",
-    ]
-
-    def result_to_dict(tup):
-        return {k: v for (k, v) in zip(result_labeling, tup, strict=True)}
-
-    def query_answers(user_id):
-        answered_questions_for_user_q = db.session.query(YNAnswer) \
-            .filter_by(user_id=user_id) \
-            .subquery()
-        comparisons_for_user_q = db.session.query(
-            YNQuestion.question,
-            answered_questions_for_user_q.c.answer,
-            answered_questions_for_user_q.c.probability,
-            YNQuestion.answer,
-            YNQuestion.comment) \
-            .join(answered_questions_for_user_q)
-        return [result_to_dict(result) for result in comparisons_for_user_q.all()]
-    return query_answers

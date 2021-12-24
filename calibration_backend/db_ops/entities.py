@@ -1,8 +1,7 @@
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship, validates
 from common.utils import make_to_dict_clsfn, VALID_PROBABILITY_QUANTS
-from db_ops.queries import construct_remaining_questions_query, construct_answers_statistics_query, \
-    construct_answers_query
+from db_ops.queries import construct_remaining_questions_query, construct_answers_statistics_query
 
 
 def initialize_schema(db):
@@ -145,9 +144,9 @@ def initialize_schema(db):
         Schema.query_remaining_questions = staticmethod(
             construct_remaining_questions_query(db, YNQuestion, YNAnswer))
         Schema.query_answers_statistics = staticmethod(
-            construct_answers_statistics_query(db, YNQuestion, YNAnswer))
+            construct_answers_statistics_query(db, YNQuestion, YNAnswer, with_text_data=False))
         Schema.query_answers = staticmethod(
-            construct_answers_query(db, YNQuestion, YNAnswer))
+            construct_answers_statistics_query(db, YNQuestion, YNAnswer, with_text_data=True))
 
         initialize_schema.schema = Schema
         return initialize_schema.schema
