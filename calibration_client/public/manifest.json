@@ -1,13 +1,7 @@
 {
   "short_name": "Calibration App",
   "name": "Rationality Calibration App",
-  "icons": [
-    {
-      "src": "scales.png",
-      "sizes": "64x64",
-      "type": "image/x-icon"
-    }
-  ],
+  "icons": [],
   "start_url": ".",
   "display": "standalone",
   "theme_color": "#000000",
