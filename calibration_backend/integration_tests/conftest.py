@@ -59,6 +59,20 @@ def client_uqa(client_uq):
     yield client_uq
 
 
+@pytest.fixture(scope="function")
+def client_uqp(client_uq):
+    _ = client_uq.post('/create_prediction', json={
+        "user_id": 1, "prediction": "p1",
+        "created_ts": 1000000, "resolve_ts": 2000000})
+    _ = client_uq.post('/create_prediction', json={
+        "user_id": 1, "prediction": "p2",
+        "created_ts": 1000000, "resolve_ts": 2000000})
+    _ = client_uq.post('/create_prediction', json={
+        "user_id": 2, "prediction": "p3",
+        "created_ts": 1000000, "resolve_ts": 2000000})
+    yield client_uq
+
+
 def assert_get_users_valid_response(response):
     assert response.status_code == 200
     jresp = response.get_json()

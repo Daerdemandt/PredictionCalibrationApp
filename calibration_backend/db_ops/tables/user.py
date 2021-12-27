@@ -9,6 +9,7 @@ def construct_user_table(db):
         name = db.Column(db.String(64), nullable=False)
 
         ynanswer = relationship("YNAnswer", cascade="all,delete", backref="users")
+        prediction_rel = relationship("Prediction", cascade="all,delete", backref="users")
 
         @validates('name')
         def validate_username(self, key, name):

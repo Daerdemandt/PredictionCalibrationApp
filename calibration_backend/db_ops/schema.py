@@ -13,7 +13,7 @@ def initialize_schema(db):
             User = construct_user_table(db)
             YNQuestion = construct_ynquestion_table(db)
             YNAnswer = construct_ynanswer_table(db, User, YNQuestion)
-            Prediction = construct_prediction_table(db)
+            Prediction = construct_prediction_table(db, User)
             query_remaining_questions = staticmethod(
                 construct_remaining_questions_query(
                     db, YNQuestion, YNAnswer))
