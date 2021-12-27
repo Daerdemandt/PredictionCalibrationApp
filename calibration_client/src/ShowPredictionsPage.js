@@ -14,7 +14,22 @@ import {
   Paper,
 } from "@mui/material";
 
-export const PredictionsTable = ({ predictions }) => {
+const PredictionsTable = ({ predictions }) => {
+  const resultToString = (result) => {
+    switch (result) {
+      case -1:
+        return "Ещё не разрешено";
+      case 0:
+        return "Не исполнилось";
+      case 1:
+        return "Исполнилось";
+      case 2:
+        return "Результат неясен";
+      default:
+        throw new Error(`Unknown result ${result}`);
+    }
+  };
+
   return (
     <main>
       <TableContainer component={Paper}>
@@ -46,7 +61,9 @@ export const PredictionsTable = ({ predictions }) => {
                 </TableCell>
                 <TableCell align="center">{prediction.resolve_ts}</TableCell>
                 <TableCell align="center">{prediction.created_ts}</TableCell>
-                <TableCell align="center">{prediction.result}</TableCell>
+                <TableCell align="center">
+                  {resultToString(prediction.result)}
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
