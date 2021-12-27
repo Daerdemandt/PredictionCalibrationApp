@@ -1,4 +1,4 @@
-import pathlib
+from tqdm import tqdm
 
 from common.base_app import init_app
 from db_ops.schema import initialize_schema
@@ -7,12 +7,16 @@ from common.utils import load_questions
 
 def recreate_db(db, Schema):
     db.create_all()
-    for record in load_questions():
+    questions = load_questions()
+    for record in tqdm(questions, total=len(questions)):
         try:
             db.session.add(Schema.YNQuestion(**record))
-            db.session.commit()
         except AssertionError as ae:
             print(f"Question {record['question']} could not be added: {str(ae)}")
+    try:
+        db.session.commit()
+    except Exception as e:
+        print(f"Could not commit questions: {str(e)}")
 
 
 if __name__ == "__main__":
