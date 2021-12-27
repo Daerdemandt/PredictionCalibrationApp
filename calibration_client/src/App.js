@@ -5,6 +5,7 @@ import { HelpPage } from "./HelpPage";
 import { QuestionsPage } from "./QuestionsPage/QuestionsPage";
 import { StatisticsPage } from "./StatisticsPage";
 import { AnswerHistory } from "./AnswerHistoryPage";
+import { MakePredictionPage } from "./MakePredictionPage";
 import { Button, Typography } from "@mui/material";
 import { NewUserInput, UserManagementPane } from "./UserManagementPane";
 import InfoAlert from "./shared/InfoAlert";
@@ -120,6 +121,16 @@ function Home({ selectedUser, setSelectedUser }) {
         </div>
         <div style={buttonStyle}>
           <Button
+            color="secondary"
+            variant="contained"
+            size="large"
+            onClick={() => navigate("/create_prediction")}
+          >
+            Сделать прогноз
+          </Button>
+        </div>
+        <div style={buttonStyle}>
+          <Button
             variant="contained"
             size="large"
             onClick={() => navigate("/statistics")}
@@ -199,6 +210,10 @@ function App() {
         <Route
           path="/history"
           element={<AnswerHistory user={selectedUser} />}
+        />
+        <Route
+          path="/create_prediction"
+          element={<MakePredictionPage user={selectedUser} />}
         />
         <Route path="/help" element={<HelpPage />} />
       </Routes>
