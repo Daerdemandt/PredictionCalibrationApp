@@ -1,4 +1,5 @@
 from flask import request
+from sqlalchemy import and_
 
 from common.utils import gather_and_validate_fields
 
@@ -46,10 +47,20 @@ def initialize_prediction_interaction_api(app, Schema):
     def get_predictions():
         try:
             data = gather_and_validate_fields({"user_id": int}, request.args)
+            data |= gather_and_validate_fields(
+                {"resolved_before_ts": int, "only_unresolved": int},
+                request.args, required=False)
         except ValueError as e:
             return {"error": str(e) + " in data for /get_predictions"}, 400
         try:
-            predictions = Schema.Prediction.query.filter_by(user_id=data["user_id"]).all()
+            P = Schema.Prediction
+            filter_conditions = [P.user_id == data["user_id"]]
+            if "resolved_before_ts" in data:
+                filter_conditions.append(P.resolve_ts < data["resolved_before_ts"])
+            if "only_unresolved" in data and data["only_unresolved"] != 0:
+                filter_conditions.append(P.result == P.PredictionResult.UNRESOLVED.value)
+            query = P.query.filter(*filter_conditions)
+            predictions = query.all()
             return {"predictions": [p.to_dict() for p in predictions]}
         except Exception as e:
             return {"error": f"Could not get predictions: {str(e)}"}, 503

@@ -66,7 +66,7 @@ def client_uqp(client_uq):
         "created_ts": 1000000, "resolve_ts": 2000000})
     _ = client_uq.post('/create_prediction', json={
         "user_id": 1, "prediction": "p2",
-        "created_ts": 1000000, "resolve_ts": 2000000})
+        "created_ts": 1000000, "resolve_ts": 1500000})
     _ = client_uq.post('/create_prediction', json={
         "user_id": 2, "prediction": "p3",
         "created_ts": 1000000, "resolve_ts": 2000000})

@@ -154,3 +154,48 @@ def test_delete_user_deletes_predictions(client_uqp):
     assert_valid_get_predictions_response(response)
     predictions = response.get_json()["predictions"]
     assert len(predictions) == 0
+
+
+@pytest.mark.parametrize("resolve_ts, expected_len", [(2000001, 2), (2000000, 1), (1000000, 0)])
+def test_get_predictions_with_resolve_ts(client_uqp, resolve_ts, expected_len):
+    response = client_uqp.get(f'/get_predictions?user_id=1&resolved_before_ts={resolve_ts}')
+    assert_valid_get_predictions_response(response)
+    predictions = response.get_json()["predictions"]
+    assert len(predictions) == expected_len
+    assert all((p["resolve_ts"] < resolve_ts for p in predictions))
+
+
+@pytest.mark.parametrize("result", [0, 1, 2])
+def test_get_predictions_with_only_unresolved(client_uqp, result):
+    _ = client_uqp.put(f'/resolve_prediction?prediction_id=1&result={result}')
+    response = client_uqp.get(f'/get_predictions?user_id=1&only_unresolved=1')
+    assert_valid_get_predictions_response(response)
+    predictions = response.get_json()["predictions"]
+    assert len(predictions) == 1
+
+
+def test_multiple_users_dont_interact(client_uqp):
+    response = client_uqp.get(f'/get_predictions?user_id=1&only_unresolved=1')
+    assert_valid_get_predictions_response(response)
+    predictions = response.get_json()["predictions"]
+    assert len(predictions) == 2
+    response = client_uqp.get(f'/get_predictions?user_id=2&only_unresolved=1')
+    assert_valid_get_predictions_response(response)
+    predictions = response.get_json()["predictions"]
+    assert len(predictions) == 1
+
+    _ = client_uqp.put(f'/resolve_prediction?prediction_id=3&result=1')
+    response = client_uqp.get(f'/get_predictions?user_id=1&only_unresolved=1')
+    assert_valid_get_predictions_response(response)
+    predictions = response.get_json()["predictions"]
+    assert len(predictions) == 2
+    response = client_uqp.get(f'/get_predictions?user_id=2&only_unresolved=1')
+    assert_valid_get_predictions_response(response)
+    predictions = response.get_json()["predictions"]
+    assert len(predictions) == 0
+
+    _ = client_uqp.delete(f'/delete_user?user_id=2')
+    response = client_uqp.get(f'/get_predictions?user_id=1&only_unresolved=1')
+    assert_valid_get_predictions_response(response)
+    predictions = response.get_json()["predictions"]
+    assert len(predictions) == 2
