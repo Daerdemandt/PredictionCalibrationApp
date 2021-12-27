@@ -5,6 +5,7 @@ import { Button, TextField } from "@mui/material";
 import DesktopDatePicker from "@mui/lab/DesktopDatePicker";
 import LocalizationProvider from "@mui/lab/LocalizationProvider";
 import AdapterDateFns from "@mui/lab/AdapterDateFns";
+import InfoAlert from "./shared/InfoAlert";
 
 function getEmptyForm() {
   return {
@@ -15,9 +16,29 @@ function getEmptyForm() {
 }
 
 export function MakePredictionPage({ user }) {
+  const [postData, setPostData] = React.useState(null);
   const [predictionError, setPredictionError] = React.useState(false);
   const [probabilityError, setProbabilityError] = React.useState(false);
   const [temporaryState, setTemporaryState] = React.useState(getEmptyForm());
+  const [showPredictionMadeAlert, setShowPredicitonMadeAlert] =
+    React.useState(false);
+
+  React.useEffect(() => {
+    async function realCreatePrediction() {
+      if (postData != null) {
+        try {
+          // ignore result for now, do not await
+          const response = await axios.post("/create_prediction", postData);
+          if (response.status === 200) setShowPredicitonMadeAlert(true);
+        } catch (error) {
+          console.log(error);
+          // Ignore for now
+        }
+        setPostData(null);
+      }
+    }
+    realCreatePrediction();
+  }, [postData]);
 
   const navigate = useNavigate();
   return (
@@ -97,21 +118,26 @@ export function MakePredictionPage({ user }) {
               temporaryState.prediction <= 99;
             setProbabilityError(isProbabilityError);
             if (!isPredictionTextError && !isProbabilityError) {
-              // ignore promise for now
-              // axios.post("/create_prediction", {
-              //   user_id: user.userId,
-              //   prediction: temporaryState.prediction,
-              //   probability: temporaryState.probability,
-              //   created_ts: Math.floor(
-              //     temporaryState.predictionResolveDate.getTime() / 1000
-              //   ),
-              // });
+              setPostData({
+                user_id: user.user_id,
+                prediction: temporaryState.prediction,
+                probability: temporaryState.probability,
+                created_ts: new Date().getTime() / 1000,
+                resolve_ts: Math.floor(
+                  temporaryState.predictionResolveDate.getTime() / 1000
+                ),
+              });
               setTemporaryState(getEmptyForm());
             }
           }}
         >
           Отправить
         </Button>
+        <InfoAlert
+          open={showPredictionMadeAlert}
+          title={`Предсказание создано`}
+          onClose={() => setShowPredicitonMadeAlert(false)}
+        />
       </main>
     </>
   );
