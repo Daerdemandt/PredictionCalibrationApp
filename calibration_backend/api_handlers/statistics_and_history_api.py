@@ -1,7 +1,7 @@
 from flask import request
 
 
-def initialize_statistics_and_history_interaction_api(app, db, Schema):
+def initialize_statistics_and_history_interaction_api(app, Schema):
     @app.route("/statistics", methods=['GET'])
     def get_statistics():
         if (user_id := request.args.get("user_id", type=int)) is None:

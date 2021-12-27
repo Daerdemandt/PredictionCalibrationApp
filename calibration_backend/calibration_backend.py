@@ -5,14 +5,14 @@ from common.base_app import init_app
 from db_ops.schema import initialize_schema
 
 
-def initialize_request_handlers(app, db, Schema):
-    initialize_user_interaction_api(app, db, Schema)
-    initialize_question_interaction_api(app, db, Schema)
-    initialize_statistics_and_history_interaction_api(app, db, Schema)
+def initialize_request_handlers(app, Schema):
+    initialize_user_interaction_api(app, Schema)
+    initialize_question_interaction_api(app, Schema)
+    initialize_statistics_and_history_interaction_api(app, Schema)
 
 
 if __name__ == "__main__":
     global_app, global_db = init_app()
     Schema = initialize_schema(global_db)
-    initialize_request_handlers(global_app, global_db, Schema)
+    initialize_request_handlers(global_app, Schema)
     global_app.run(debug=True)

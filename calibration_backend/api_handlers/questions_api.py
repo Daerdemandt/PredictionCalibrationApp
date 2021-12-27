@@ -3,7 +3,7 @@ from flask import request
 from common.utils import gather_and_validate_fields
 
 
-def initialize_question_interaction_api(app, db, Schema):
+def initialize_question_interaction_api(app, Schema):
     @app.route("/get_questions", methods=['GET'])
     def get_questions():
         try:
@@ -27,8 +27,8 @@ def initialize_question_interaction_api(app, db, Schema):
             return {"error": str(e) + " in data for /answer_question"}, 400
         try:
             answer = Schema.YNAnswer(**data)
-            db.session.add(answer)
-            db.session.commit()
+            Schema.db.session.add(answer)
+            Schema.db.session.commit()
         except Exception as e:
             return {"error": f"Could not add answer: {str(e)}"}, 503
         return "OK", 200
@@ -46,8 +46,8 @@ def initialize_question_interaction_api(app, db, Schema):
         data |= gather_and_validate_fields({"comment": str}, request.json, required=False)
         try:
             new_ynquestion = Schema.YNQuestion(**data)
-            db.session.add(new_ynquestion)
-            db.session.commit()
+            Schema.db.session.add(new_ynquestion)
+            Schema.db.session.commit()
         except Exception as e:
             return {"error": f"Could not add question: {str(e)}"}, 503
         return "OK", 200

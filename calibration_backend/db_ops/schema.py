@@ -24,5 +24,6 @@ def initialize_schema(db):
                 construct_answers_statistics_query(
                     db, YNQuestion, YNAnswer, with_text_data=True))
 
+        Schema.db = db  # since they are used in tandem anyway
         initialize_schema.schema = Schema
         return initialize_schema.schema

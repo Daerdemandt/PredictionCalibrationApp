@@ -12,8 +12,8 @@ from db_ops.schema import initialize_schema
 def app_db():
     app, db = init_app(is_testing=True)
     Schema = initialize_schema(db)
-    initialize_request_handlers(app, db, Schema)
-    yield app, db
+    initialize_request_handlers(app, Schema)
+    yield app, Schema.db
     Path(app.config["DATABASE_FILEPATH"]).unlink(missing_ok=True)
 
 

@@ -1,7 +1,7 @@
 from flask import request
 
 
-def initialize_user_interaction_api(app, db, Schema):
+def initialize_user_interaction_api(app, Schema):
     @app.route("/get_users", methods=['GET'])
     def get_users():
         try:
@@ -16,8 +16,8 @@ def initialize_user_interaction_api(app, db, Schema):
             return {"error": "No user_id provided in post data"}, 400
         new_user = Schema.User(name=name)
         try:
-            db.session.add(new_user)
-            db.session.commit()
+            Schema.db.session.add(new_user)
+            Schema.db.session.commit()
         except Exception as e:
             return {"error": f"Could not add user: {str(e)}"}, 503
         return get_users()
@@ -28,8 +28,8 @@ def initialize_user_interaction_api(app, db, Schema):
             return {"error": f"user_id is not provided for delete user request or could not cast to int"}, 400
         try:
             user = Schema.User.query.filter_by(user_id=user_id).one()
-            db.session.delete(user)
-            db.session.commit()
+            Schema.db.session.delete(user)
+            Schema.db.session.commit()
         except Exception as e:
             return {"error": f"Could not delete user: {str(e)}"}, 503
         return get_users()
