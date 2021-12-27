@@ -30,6 +30,10 @@ const PredictionsTable = ({ predictions }) => {
     }
   };
 
+  const formatDate = (date) => {
+    return date.getDate() + "/" + date.getMonth() + "/" + date.getFullYear();
+  };
+
   return (
     <main>
       <TableContainer component={Paper}>
@@ -59,8 +63,12 @@ const PredictionsTable = ({ predictions }) => {
                 <TableCell component="th" scope="row">
                   {prediction.prediction}
                 </TableCell>
-                <TableCell align="center">{prediction.resolve_ts}</TableCell>
-                <TableCell align="center">{prediction.created_ts}</TableCell>
+                <TableCell align="center">
+                  {formatDate(new Date(prediction.resolve_ts * 1000))}
+                </TableCell>
+                <TableCell align="center">
+                  {formatDate(new Date(prediction.created_ts * 1000))}
+                </TableCell>
                 <TableCell align="center">
                   {resultToString(prediction.result)}
                 </TableCell>
