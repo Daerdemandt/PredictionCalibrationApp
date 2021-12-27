@@ -1,7 +1,7 @@
 import pathlib
 
 from common.base_app import init_app
-from db_ops.entities import initialize_schema
+from db_ops.schema import initialize_schema
 from common.utils import load_questions
 
 

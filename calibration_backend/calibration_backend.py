@@ -1,7 +1,7 @@
 from flask import request
 from common.base_app import init_app
 from common.utils import gather_and_validate_fields
-from db_ops.entities import initialize_schema
+from db_ops.schema import initialize_schema
 
 
 def initialize_request_handlers(app, db, Schema):

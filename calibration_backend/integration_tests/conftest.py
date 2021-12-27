@@ -5,7 +5,7 @@ import pytest
 from calibration_backend import initialize_request_handlers
 from common.base_app import init_app
 from common.utils import dict_intersection, exactly_one
-from db_ops.entities import initialize_schema
+from db_ops.schema import initialize_schema
 
 
 @pytest.fixture(scope="session")
