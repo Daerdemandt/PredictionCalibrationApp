@@ -5,7 +5,7 @@ import { getBlankAnswer, getAnswerReducer } from "./Answer";
 import { getBlankQuestion, questionReducer } from "./Question";
 import { QuestionsAnsweringControl } from "./QuestionsAnsweringControl";
 import prettifyResponseError from "../shared/prettifyResponseError";
-import { Button, Typography } from "@material-ui/core";
+import { Button, Typography } from "@mui/material";
 
 const MainPlaque = ({ questions, hasMore, error }) => {
   if (error != null) return <h1>Ошибка при загрузке вопросов: {error}</h1>;

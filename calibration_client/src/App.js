@@ -5,7 +5,7 @@ import { HelpPage } from "./HelpPage";
 import { QuestionsPage } from "./QuestionsPage/QuestionsPage";
 import { StatisticsPage } from "./StatisticsPage";
 import { AnswerHistory } from "./AnswerHistoryPage";
-import { Button, Typography } from "@material-ui/core";
+import { Button, Typography } from "@mui/material";
 import { NewUserInput, UserManagementPane } from "./UserManagementPane";
 import InfoAlert from "./shared/InfoAlert";
 import axios from "axios";
@@ -95,11 +95,12 @@ function Home({ selectedUser, setSelectedUser }) {
       </>
     );
   } else {
+    const buttonStyle = { paddingBottom: "5px" };
     return (
       <main>
-        <div style={{ paddingBottom: "5px" }}>
+        <div style={buttonStyle}>
           <Button
-            color="secondary"
+            color="trenary"
             variant="contained"
             size="large"
             onClick={() => navigate("/help")}
@@ -107,26 +108,26 @@ function Home({ selectedUser, setSelectedUser }) {
             Помощь
           </Button>
         </div>
-        <div style={{ paddingBottom: "5px" }}>
+        <div style={buttonStyle}>
           <Button
+            color="secondary"
             variant="contained"
             size="large"
-            color="primary"
             onClick={() => navigate("/questions")}
           >
-            Отвечать на вопросы
+            Отвечать на тренировочные вопросы
           </Button>
         </div>
-        <div style={{ paddingBottom: "5px" }}>
+        <div style={buttonStyle}>
           <Button
             variant="contained"
             size="large"
             onClick={() => navigate("/statistics")}
           >
-            Статистика
+            Статистика ответов
           </Button>
         </div>
-        <div style={{ paddingBottom: "5px" }}>
+        <div style={buttonStyle}>
           <Button
             variant="contained"
             size="large"

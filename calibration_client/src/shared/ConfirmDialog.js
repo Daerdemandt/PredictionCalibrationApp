@@ -7,7 +7,7 @@ import {
   Box,
   IconButton,
   Typography,
-} from "@material-ui/core";
+} from "@mui/material";
 import { Close } from "@material-ui/icons";
 
 const ConfirmDialog = ({ title, open, onClose, message = null }) => {

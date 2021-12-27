@@ -5,7 +5,7 @@ import {
   DialogActions,
   Button,
   Typography,
-} from "@material-ui/core";
+} from "@mui/material";
 
 const InfoAlert = ({ title, open, onClose, message = null }) => {
   return (

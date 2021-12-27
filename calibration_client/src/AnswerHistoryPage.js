@@ -12,7 +12,7 @@ import {
   TableHead,
   TableRow,
   Paper,
-} from "@material-ui/core";
+} from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
 export const AnswerHistoryTable = ({ answerHistory }) => {

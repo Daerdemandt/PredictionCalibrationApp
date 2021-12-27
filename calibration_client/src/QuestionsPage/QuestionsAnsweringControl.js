@@ -1,5 +1,5 @@
 import React from "react";
-import { Button } from "@material-ui/core";
+import { Button } from "@mui/material";
 import { Answer, answerToString } from "./Answer";
 
 const NDYButtonArray = ({ onAnswer }) => (
@@ -7,7 +7,7 @@ const NDYButtonArray = ({ onAnswer }) => (
     <Button
       variant="contained"
       size="large"
-      color="secondary"
+      color="trenary"
       onClick={() => onAnswer(Answer.NO)}
     >
       Нет
@@ -22,7 +22,7 @@ const NDYButtonArray = ({ onAnswer }) => (
     <Button
       variant="contained"
       size="large"
-      color="primary"
+      color="secondary"
       onClick={() => onAnswer(Answer.YES)}
     >
       Да

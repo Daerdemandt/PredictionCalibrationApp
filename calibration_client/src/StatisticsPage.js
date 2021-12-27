@@ -11,7 +11,7 @@ import {
 } from "recharts";
 import { useNavigate } from "react-router-dom";
 import prettifyResponseError from "./shared/prettifyResponseError";
-import { Button } from "@material-ui/core";
+import { Button } from "@mui/material";
 
 function ProbsLineChart({ datapoints, children }) {
   return (

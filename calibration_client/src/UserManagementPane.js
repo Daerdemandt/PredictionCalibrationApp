@@ -1,7 +1,7 @@
 import React from "react";
-import Autocomplete from "@material-ui/lab/Autocomplete";
+import Autocomplete from "@mui/material/Autocomplete";
 import ConfirmDialog from "./shared/ConfirmDialog";
-import { Button, TextField, FormLabel } from "@material-ui/core";
+import { Button, TextField, FormLabel } from "@mui/material";
 
 export function NewUserInput({ createNewUser }) {
   const [inputOk, setInputOk] = React.useState(false);
