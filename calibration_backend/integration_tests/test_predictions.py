@@ -1,5 +1,7 @@
 import pytest
 
+from integration_tests.conftest import assert_user_deleted
+
 
 def assert_valid_get_predictions_response(response):
     assert response.status_code == 200
@@ -140,6 +142,15 @@ def test_resolve_prediction_unknown_prediction_id_error(client_uqp, prediction_i
 
 def test_get_predictions_for_unknown_user_empty_response(client_uq):
     response = client_uq.get('/get_predictions?user_id=42')
+    assert_valid_get_predictions_response(response)
+    predictions = response.get_json()["predictions"]
+    assert len(predictions) == 0
+
+
+def test_delete_user_deletes_predictions(client_uqp):
+    response = client_uqp.delete(f'/delete_user?user_id=1')
+    assert_user_deleted(response, 1, "TestUser1", 1)
+    response = client_uqp.get('/get_predictions?user_id=1')
     assert_valid_get_predictions_response(response)
     predictions = response.get_json()["predictions"]
     assert len(predictions) == 0

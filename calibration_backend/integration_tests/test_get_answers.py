@@ -1,5 +1,7 @@
 from typing import Dict
 
+from integration_tests.conftest import assert_user_deleted
+
 
 def assert_valid_get_answers_response(response):
     assert response.status_code == 200
@@ -89,6 +91,15 @@ def test_get_answers_no_such_user_empty_result(client_uqa):
 
 def test_get_answers_known_user_no_answers_empty_result(client_uq):
     response = client_uq.get("/get_answers?user_id=1")
+    assert_valid_get_answers_response(response)
+    answers = response.get_json()["answers"]
+    assert len(answers) == 0
+
+
+def test_delete_user_deletes_answers(client_uqa):
+    response = client_uqa.delete(f'/delete_user?user_id=1')
+    assert_user_deleted(response, 1, "TestUser1", 1)
+    response = client_uqa.get("/get_answers?user_id=1")
     assert_valid_get_answers_response(response)
     answers = response.get_json()["answers"]
     assert len(answers) == 0
