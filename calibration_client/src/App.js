@@ -11,6 +11,7 @@ import { NewUserInput, UserManagementPane } from "./UserManagementPane";
 import InfoAlert from "./shared/InfoAlert";
 import axios from "axios";
 import prettifyResponseError from "./shared/prettifyResponseError";
+import { ShowPredictions } from "./ShowPredictionsPage";
 
 const useSemiPersistentState = (key, initialValue) => {
   let storedValue = null;
@@ -121,6 +122,15 @@ function Home({ selectedUser, setSelectedUser }) {
         </div>
         <div style={buttonStyle}>
           <Button
+            variant="contained"
+            size="large"
+            onClick={() => navigate("/statistics")}
+          >
+            Статистика по тренировочным вопросам
+          </Button>
+        </div>
+        <div style={buttonStyle}>
+          <Button
             color="secondary"
             variant="contained"
             size="large"
@@ -133,9 +143,9 @@ function Home({ selectedUser, setSelectedUser }) {
           <Button
             variant="contained"
             size="large"
-            onClick={() => navigate("/statistics")}
+            onClick={() => navigate("/show_predictions")}
           >
-            Статистика ответов
+            Статистика по прогнозам
           </Button>
         </div>
         <div style={buttonStyle}>
@@ -214,6 +224,10 @@ function App() {
         <Route
           path="/create_prediction"
           element={<MakePredictionPage user={selectedUser} />}
+        />
+        <Route
+          path="/show_predictions"
+          element={<ShowPredictions user={selectedUser} />}
         />
         <Route path="/help" element={<HelpPage />} />
       </Routes>
