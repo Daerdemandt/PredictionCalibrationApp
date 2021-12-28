@@ -1,6 +1,6 @@
 import pytest
 
-from integration_tests.conftest import assert_user_deleted
+from integration_tests.conftest import assert_user_deleted, assert_valid_statistics_response
 
 
 def assert_valid_get_predictions_response(response):
@@ -206,3 +206,44 @@ def test_multiple_users_dont_interact(client_uqp):
     assert_valid_get_predictions_response(response)
     predictions = response.get_json()["predictions"]
     assert len(predictions) == 2
+
+
+@pytest.mark.parametrize("result", [0, 1])
+def test_predictions_statistics_simple(client_uqp, result):
+    expected_probability = [75, 80]
+    for pr_id in range(1, 3):
+        _ = client_uqp.put(f'/resolve_prediction?prediction_id={pr_id}&result={result}')
+        response = client_uqp.get('/predictions_statistics?user_id=1')
+        assert_valid_statistics_response(response)
+        statistics = response.get_json()["statistics"]
+        assert len(statistics) == pr_id
+        assert all((dp["is_correct"] == bool(result) and dp["probability"] == prob)
+                   for dp, prob in zip(statistics, expected_probability))
+
+
+def test_predictions_statistics_ambiguous_not_in_statistics(client_uqp):
+    _ = client_uqp.put(f'/resolve_prediction?prediction_id=1&result=2')
+    response = client_uqp.get('/predictions_statistics?user_id=1')
+    assert_valid_statistics_response(response)
+    statistics = response.get_json()["statistics"]
+    assert len(statistics) == 0
+
+
+def test_predictions_statistics_other_user_not_in_statistics(client_uqp):
+    _ = client_uqp.put(f'/resolve_prediction?prediction_id=3&result=1')
+    response = client_uqp.get('/predictions_statistics?user_id=1')
+    assert_valid_statistics_response(response)
+    statistics = response.get_json()["statistics"]
+    assert len(statistics) == 0
+
+
+def test_predictions_statistics_no_user_id_error(client_uqp):
+    response = client_uqp.get('/predictions_statistics')
+    assert response.status_code == 400
+
+
+def test_predictions_statistics_unknown_user_empty_result(client_uqp):
+    response = client_uqp.get('/predictions_statistics?user_id=42')
+    assert_valid_statistics_response(response)
+    statistics = response.get_json()["statistics"]
+    assert len(statistics) == 0

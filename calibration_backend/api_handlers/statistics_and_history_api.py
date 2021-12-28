@@ -2,12 +2,22 @@ from flask import request
 
 
 def initialize_statistics_and_history_interaction_api(app, Schema):
-    @app.route("/statistics", methods=['GET'])
-    def get_statistics():
+    @app.route("/answers_statistics", methods=['GET'])
+    def get_answers_statistics():
         if (user_id := request.args.get("user_id", type=int)) is None:
-            return {"error": f"user_id is not provided for statistics request or could not cast to int"}, 400
+            return {"error": f"user_id is not provided for /answers_statistics request or could not cast to int"}, 400
         try:
             datapoints = Schema.query_answers_statistics(user_id)
+        except Exception as e:
+            return {"error": f"Could not query statistics data: {str(e)}"}, 503
+        return {"statistics": datapoints}
+
+    @app.route("/predictions_statistics", methods=['GET'])
+    def get_predictions_statistics():
+        if (user_id := request.args.get("user_id", type=int)) is None:
+            return {"error": f"user_id is not provided for /predictions_statistics request or could not cast to int"}, 400
+        try:
+            datapoints = Schema.query_predictions_statistics(user_id)
         except Exception as e:
             return {"error": f"Could not query statistics data: {str(e)}"}, 503
         return {"statistics": datapoints}

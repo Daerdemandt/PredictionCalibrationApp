@@ -177,7 +177,7 @@ export function StatisticsPage({ user }) {
   });
   const requestStatistics = React.useCallback(async () => {
     try {
-      let url = `/statistics?user_id=${user.user_id}`;
+      let url = `/answers_statistics?user_id=${user.user_id}`;
       const result = await axios.get(url);
       setStatistics({
         statistics: result.data.statistics,

@@ -1,13 +1,4 @@
-def assert_valid_statistics_response(response):
-    assert response.status_code == 200
-    jresp = response.get_json()
-    assert "statistics" in jresp
-    expected_keys = {
-        "is_correct",
-        "probability",
-    }
-    for chunk in jresp["statistics"]:
-        assert set(chunk.keys()) == expected_keys
+from integration_tests.conftest import assert_valid_statistics_response
 
 
 def assert_uqa_expected_data(statistics):

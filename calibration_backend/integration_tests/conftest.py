@@ -107,3 +107,15 @@ def assert_question_in_response(questions, qdata, expected_num):
     assert len(questions) == expected_num
     if expected_num > 0:
         assert exactly_one((dict_intersection(qdata, q) == qdata for q in questions))
+
+
+def assert_valid_statistics_response(response):
+    assert response.status_code == 200
+    jresp = response.get_json()
+    assert "statistics" in jresp
+    expected_keys = {
+        "is_correct",
+        "probability",
+    }
+    for chunk in jresp["statistics"]:
+        assert set(chunk.keys()) == expected_keys

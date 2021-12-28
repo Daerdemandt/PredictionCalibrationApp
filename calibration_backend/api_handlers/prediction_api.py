@@ -1,5 +1,4 @@
 from flask import request
-from sqlalchemy import and_
 
 from common.utils import gather_and_validate_fields
 

@@ -21,7 +21,6 @@ def construct_remaining_questions_query(db, YNQuestion, YNAnswer):
             .filter_by(answer=None)
         questions = remaining_questions_for_user_q.limit(QUESTIONS_PAGE_LIMIT).all()
         return questions
-
     return query_remaining_questions
 
 
@@ -35,7 +34,18 @@ def construct_answers_statistics_query(db, YNQuestion, YNAnswer):
                 answered_questions_for_user_q.c.probability.label("probability")
             ).join(answered_questions_for_user_q)
         return all_query_results_as_list_of_dicts(comparisons_for_user_q)
+    return query_answers_statistics
 
+
+def construct_predictions_statistics_query(db, Prediction):
+    def query_answers_statistics(user_id):
+        resolved_predictions_for_user_q = db.session.query(
+                Prediction.result.label("is_correct"),
+                Prediction.probability.label("probability"))\
+            .filter(and_(Prediction.user_id == user_id,
+                     or_(Prediction.result == Prediction.PredictionResult.RESOLVED_FALSE.value,
+                         Prediction.result == Prediction.PredictionResult.RESOLVED_TRUE.value)))
+        return all_query_results_as_list_of_dicts(resolved_predictions_for_user_q)
     return query_answers_statistics
 
 
@@ -52,5 +62,4 @@ def construct_answers_history_query(db, YNQuestion, YNAnswer):
                 YNQuestion.comment.label("comment")) \
             .join(answered_questions_for_user_q)
         return all_query_results_as_list_of_dicts(answers_for_user_q)
-
     return query_answers_statistics
