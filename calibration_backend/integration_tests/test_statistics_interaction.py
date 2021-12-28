@@ -3,8 +3,7 @@ def assert_valid_statistics_response(response):
     jresp = response.get_json()
     assert "statistics" in jresp
     expected_keys = {
-        "real_answer",
-        "user_answer",
+        "is_correct",
         "probability",
     }
     for chunk in jresp["statistics"]:
@@ -13,9 +12,9 @@ def assert_valid_statistics_response(response):
 
 def assert_uqa_expected_data(statistics):
     expected = [
-        {"probability": 55, "real_answer": True, "user_answer": False},
-        {"probability": 55, "real_answer": False, "user_answer": False},
-        {"probability": 99, "real_answer": True, "user_answer": True},
+        {"probability": 55, "is_correct": False},
+        {"probability": 55, "is_correct": True},
+        {"probability": 99, "is_correct": True},
     ]
     assert len(statistics) == len(expected)
     for chunk in statistics:

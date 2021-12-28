@@ -85,7 +85,7 @@ const toDisplayableDatapoints = (statistics, granularityLevel) => {
     });
   });
   const numberOfCorrectAnswers = (datapoints) => {
-    return datapoints.filter((dp) => dp.real_answer === dp.user_answer).length;
+    return datapoints.filter((dp) => dp.is_correct).length;
   };
   const result = [];
   groupedDatapoints.forEach((values, probability_quotient) => {

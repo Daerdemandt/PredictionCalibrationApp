@@ -1,4 +1,5 @@
-from db_ops.queries import construct_remaining_questions_query, construct_answers_statistics_query
+from db_ops.queries import construct_remaining_questions_query, construct_answers_statistics_query, \
+    construct_answers_history_query
 from db_ops.tables.prediction import construct_prediction_table
 from db_ops.tables.user import construct_user_table
 from db_ops.tables.ynanswer import construct_ynanswer_table
@@ -18,11 +19,9 @@ def initialize_schema(db):
                 construct_remaining_questions_query(
                     db, YNQuestion, YNAnswer))
             query_answers_statistics = staticmethod(
-                construct_answers_statistics_query(
-                    db, YNQuestion, YNAnswer, with_text_data=False))
+                construct_answers_statistics_query(db, YNQuestion, YNAnswer))
             query_answers = staticmethod(
-                construct_answers_statistics_query(
-                    db, YNQuestion, YNAnswer, with_text_data=True))
+                construct_answers_history_query(db, YNQuestion, YNAnswer))
 
         Schema.db = db  # since they are used in tandem anyway
         initialize_schema.schema = Schema
