@@ -5,8 +5,9 @@ This app allows you to improve your precision in making probablistic estimates w
 # Features
 
 - Bank of 100 random science questions
-- Statistics over answered training questions
-- Also you can review which questions you answered correctly and where you've been mistaken
+- Allows to make predictions and store their resolve date and probability
+- Statistics over answered training questions and predictions
+- Also you can review which questions/predictions you answered correctly and where you've been mistaken
 - Supports multiple users
 - Client-server architecture with REST API and Web-interface - you can access running app from any browser on any device in your local net
 - Integration tests for backend with pytest
@@ -18,6 +19,8 @@ This app allows you to improve your precision in making probablistic estimates w
 ![pic2](pictures_for_readme/pic2.png)
 ![pic3](pictures_for_readme/pic3.png)
 ![pic4](pictures_for_readme/pic4.png)
+![pic5](pictures_for_readme/pic5.png)
+![pic6](pictures_for_readme/pic6.png)
 
 # Requirements
 
@@ -26,7 +29,9 @@ Frontend:
 - react 17.0.2
 - react-router-dom 6.0.2
 - react-scripts 4.0.3
-- material-ui 4.12
+- mui/material 5.2.5
+- mui/lab 5.0.0
+- material-ui/icons 4.11.2
 - axios 0.24.0
 - recharts 2.1.8
 
@@ -54,10 +59,9 @@ python calibration_backend.py
 
 # TODOs
 
-- Page for long-term personal predictions
 - Page for adding questions online
 - Loading questions from more files
 - Selecting topic for exercise questions
-- Good error alerts when answering questions from multiple browsers or when Promises are rejected
+- Good error alerts when answering questions from multiple browsers or when Promises are rejected instead of just changing title for page
 - Fix blinking "Loading..." - preload some data
 - English translation (maybe)
