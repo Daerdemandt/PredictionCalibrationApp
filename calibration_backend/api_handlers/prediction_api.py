@@ -11,6 +11,7 @@ def initialize_prediction_interaction_api(app, Schema):
             data = gather_and_validate_fields({
                 "user_id": int,
                 "prediction": str,
+                "probability": int,
                 "resolve_ts": int,
                 "created_ts": int
             }, request.json)

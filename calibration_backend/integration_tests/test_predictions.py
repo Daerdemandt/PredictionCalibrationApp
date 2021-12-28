@@ -8,7 +8,7 @@ def assert_valid_get_predictions_response(response):
     jresp = response.get_json()
     assert "predictions" in jresp
     expected_keys = {
-        "prediction_id", "user_id", "prediction",
+        "prediction_id", "user_id", "prediction", "probability",
         "resolve_ts", "created_ts", "result"
     }
     for chunk in jresp["predictions"]:
@@ -22,10 +22,12 @@ def assert_uqp_predictions_statuses_unchanged(response):
 
 
 def test_create_predictions_simple(client_uq):
-    data = {"user_id": 1, "prediction": "p1", "created_ts": 1000000, "resolve_ts": 2000000}
+    data = {"user_id": 1, "prediction": "p1", "probability": 75,
+            "created_ts": 1000000, "resolve_ts": 2000000}
     response = client_uq.post('/create_prediction', json=data)
     assert response.status_code == 200
-    data = {"user_id": 1, "prediction": "p2", "created_ts": 1000000, "resolve_ts": 2000000}
+    data = {"user_id": 1, "prediction": "p2", "probability": 75,
+            "created_ts": 1000000, "resolve_ts": 2000000}
     response = client_uq.post('/create_prediction', json=data)
     assert response.status_code == 200
     response = client_uq.get('/get_predictions?user_id=1')
@@ -35,10 +37,12 @@ def test_create_predictions_simple(client_uq):
 
 
 def test_create_same_predictions_not_validated(client_uq):
-    data = {"user_id": 1, "prediction": "p1", "created_ts": 1000000, "resolve_ts": 2000000}
+    data = {"user_id": 1, "prediction": "p1", "probability": 75,
+            "created_ts": 1000000, "resolve_ts": 2000000}
     response = client_uq.post('/create_prediction', json=data)
     assert response.status_code == 200
-    data = {"user_id": 1, "prediction": "p1", "created_ts": 1000000, "resolve_ts": 2000000}
+    data = {"user_id": 1, "prediction": "p1", "probability": 75,
+            "created_ts": 1000000, "resolve_ts": 2000000}
     response = client_uq.post('/create_prediction', json=data)
     assert response.status_code == 200
     response = client_uq.get('/get_predictions?user_id=1')
@@ -49,10 +53,12 @@ def test_create_same_predictions_not_validated(client_uq):
 
 def test_resolved_before_created_not_validated(client_uq):
     # in case user wants to record prediction made elsewhere
-    data = {"user_id": 1, "prediction": "p1", "created_ts": 1000000, "resolve_ts": 2000000}
+    data = {"user_id": 1, "prediction": "p1", "probability": 75,
+            "created_ts": 1000000, "resolve_ts": 2000000}
     response = client_uq.post('/create_prediction', json=data)
     assert response.status_code == 200
-    data = {"user_id": 1, "prediction": "p2", "created_ts": 1000000, "resolve_ts": 1}
+    data = {"user_id": 1, "prediction": "p2", "probability": 75,
+            "created_ts": 1000000, "resolve_ts": 1}
     response = client_uq.post('/create_prediction', json=data)
     assert response.status_code == 200
     response = client_uq.get('/get_predictions?user_id=1')
@@ -63,7 +69,8 @@ def test_resolved_before_created_not_validated(client_uq):
 
 def test_prediction_unknown_user_id_error(client_uq):
     # in case user wants to record prediction made elsewhere
-    data = {"user_id": 42, "prediction": "p1", "created_ts": 1000000, "resolve_ts": 2000000}
+    data = {"user_id": 42, "prediction": "p1", "probability": 75,
+            "created_ts": 1000000, "resolve_ts": 2000000}
     response = client_uq.post('/create_prediction', json=data)
     assert response.status_code == 503
     response = client_uq.get('/get_predictions?user_id=1')
@@ -73,8 +80,8 @@ def test_prediction_unknown_user_id_error(client_uq):
 
 
 def test_prediction_empty_text_error(client_uq):
-    # in case user wants to record prediction made elsewhere
-    data = {"user_id": 1, "prediction": "", "created_ts": 1000000, "resolve_ts": 2000000}
+    data = {"user_id": 1, "prediction": "", "probability": 75,
+            "created_ts": 1000000, "resolve_ts": 2000000}
     response = client_uq.post('/create_prediction', json=data)
     assert response.status_code == 503
     response = client_uq.get('/get_predictions?user_id=1')
@@ -84,7 +91,7 @@ def test_prediction_empty_text_error(client_uq):
 
 
 def test_create_prediction_unknown_parameters_ignored(client_uq):
-    data = {"user_id": 1, "prediction": "p1",
+    data = {"user_id": 1, "prediction": "p1", "probability": 75,
             "created_ts": 1000000, "resolve_ts": 2000000,
             "unknown_parameter": 42}
     response = client_uq.post('/create_prediction', json=data)

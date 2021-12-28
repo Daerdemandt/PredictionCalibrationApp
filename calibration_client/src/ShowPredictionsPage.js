@@ -50,6 +50,9 @@ const PredictionsTable = ({ predictions, onResolveClick }) => {
                 <strong>Предсказание</strong>
               </TableCell>
               <TableCell align="center">
+                <strong>Вероятность</strong>
+              </TableCell>
+              <TableCell align="center">
                 <strong>Время разрешения</strong>
               </TableCell>
               <TableCell align="center">
@@ -70,6 +73,7 @@ const PredictionsTable = ({ predictions, onResolveClick }) => {
                 <TableCell component="th" scope="row">
                   {prediction.prediction}
                 </TableCell>
+                <TableCell align="center">{prediction.probability}</TableCell>
                 <TableCell align="center">
                   {formatDate(new Date(prediction.resolve_ts * 1000))}
                 </TableCell>

@@ -62,13 +62,13 @@ def client_uqa(client_uq):
 @pytest.fixture(scope="function")
 def client_uqp(client_uq):
     _ = client_uq.post('/create_prediction', json={
-        "user_id": 1, "prediction": "p1",
+        "user_id": 1, "prediction": "p1", "probability": 75,
         "created_ts": 1000000, "resolve_ts": 2000000})
     _ = client_uq.post('/create_prediction', json={
-        "user_id": 1, "prediction": "p2",
+        "user_id": 1, "prediction": "p2", "probability": 80,
         "created_ts": 1000000, "resolve_ts": 1500000})
     _ = client_uq.post('/create_prediction', json={
-        "user_id": 2, "prediction": "p3",
+        "user_id": 2, "prediction": "p3", "probability": 85,
         "created_ts": 1000000, "resolve_ts": 2000000})
     yield client_uq
 

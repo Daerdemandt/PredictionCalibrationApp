@@ -19,12 +19,14 @@ def construct_prediction_table(db, User):
         prediction_id = db.Column(db.Integer, primary_key=True, autoincrement=True, nullable=False)
         user_id = db.Column(db.Integer, ForeignKey('users.user_id'), nullable=False)
         prediction = db.Column(db.Text, nullable=False)
+        probability = db.Column(db.Integer, nullable=False)
         resolve_ts = db.Column(db.Integer, nullable=False)
         created_ts = db.Column(db.Integer, nullable=False)
         result = db.Column(db.Integer, default=PredictionResult.UNRESOLVED.value)
 
         to_dict = make_to_dict_clsfn(
-            ["prediction_id", "user_id", "prediction", "resolve_ts", "created_ts", "result"])
+            ["prediction_id", "user_id", "prediction", "probability",
+             "resolve_ts", "created_ts", "result"])
 
         @validates('user_id')
         def validate_user_id(self, key, user_id):
@@ -37,6 +39,12 @@ def construct_prediction_table(db, User):
             if not prediction:
                 raise AssertionError('No prediction provided')
             return prediction
+
+        @validates('probability')
+        def validate_probability(self, key, probability):
+            if probability < 50 or probability > 99:
+                raise AssertionError('Invalid probability')
+            return probability
 
         @validates('result')
         def validate_result(self, key, result):
