@@ -11,7 +11,7 @@ import {
 import { Close } from "@material-ui/icons";
 
 export const ResolvePredictionResult = {
-  UNCHANGED: -1,
+  UNRESOLVED: -1,
   NOTFULLFILLED: 0,
   FULLFILLED: 1,
   AMBIGUOUS: 2,
@@ -34,7 +34,7 @@ export const ResolvePredictionDialog = ({ open, message, onClose }) => {
         <Button
           color="primary"
           variant="contained"
-          onClick={() => onClose(ResolvePredictionResult.UNCHANGED)}
+          onClick={() => onClose(ResolvePredictionResult.UNRESOLVED)}
         >
           Ещё не разрешено
         </Button>

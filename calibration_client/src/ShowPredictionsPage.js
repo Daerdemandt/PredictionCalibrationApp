@@ -2,7 +2,10 @@ import React from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import prettifyResponseError from "./shared/prettifyResponseError";
-import ResolvePredictionDialog from "./ResolvePredictionDialog";
+import {
+  ResolvePredictionResult,
+  ResolvePredictionDialog,
+} from "./ResolvePredictionDialog";
 import {
   Button,
   Typography,
@@ -105,20 +108,30 @@ export function ShowPredictions({ user }) {
   const [selectedPrediciton, setSelectedPrediciton] = React.useState("");
   const [selectedPredicitonId, setSelectedPredicitonId] = React.useState(null);
   const [selectedResolve, setSelectedResolve] = React.useState(null);
+  const [showAll, setShowAll] = React.useState(false);
 
-  async function resolvePrediction(prId, result) {
+  async function resolvePrediction(prId, result, hidePredictionsAfterwards) {
     try {
       const url = `/resolve_prediction?prediction_id=${prId}&result=${result}`;
       const backendResponse = await axios.put(url);
       if (backendResponse.status === 200) {
-        let changed = predictions.find((p) => p.prediction_id === prId);
-        if (changed != null) {
-          changed.result = result;
-          setPredictions(predictions.slice());
+        if (hidePredictionsAfterwards) {
+          if (result !== ResolvePredictionResult.UNRESOLVED) {
+            const leftPredictions = predictions.filter(
+              (p) => p.prediction_id !== prId
+            );
+            setPredictions(leftPredictions);
+          }
         } else {
-          console.log(
-            `Changed prediction with id ${prId} but not found it in the list later`
-          );
+          let changed = predictions.find((p) => p.prediction_id === prId);
+          if (changed != null) {
+            changed.result = result;
+            setPredictions(predictions.slice());
+          } else {
+            console.log(
+              `Changed prediction with id ${prId} but not found it in the list later`
+            );
+          }
         }
       }
     } catch (e) {
@@ -128,13 +141,13 @@ export function ShowPredictions({ user }) {
   }
 
   React.useEffect(
-    (result) => {
-      if (selectedResolve != null && selectedPredicitonId != null) {
-        const result = selectedResolve;
-        const prId = selectedPredicitonId;
-        setSelectedResolve(null);
-        setSelectedPredicitonId(null);
-        resolvePrediction(prId, result);
+    () => {
+      const result = selectedResolve;
+      const prId = selectedPredicitonId;
+      setSelectedResolve(null);
+      setSelectedPredicitonId(null);
+      if (prId != null && result != null) {
+        resolvePrediction(prId, result, !showAll);
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -144,8 +157,14 @@ export function ShowPredictions({ user }) {
   React.useEffect(() => {
     async function requestPredictions() {
       if (!error) {
+        const userArg = `user_id=${user.user_id}`;
+        let url = `/get_predictions?${userArg}`;
+        if (!showAll) {
+          const tsNow = new Date().getTime() / 1000;
+          const filterArgs = `resolved_before_ts=${tsNow}&only_unresolved=1`;
+          url += `&${filterArgs}`;
+        }
         try {
-          let url = `/get_predictions?user_id=${user.user_id}`;
           const result = await axios.get(url);
           setPredictions(result.data.predictions);
         } catch (e) {
@@ -156,7 +175,7 @@ export function ShowPredictions({ user }) {
     }
     requestPredictions();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [showAll]);
 
   const onResolveClick = (perdiction, predictionId) => {
     setSelectedPrediciton(perdiction);
@@ -177,6 +196,16 @@ export function ShowPredictions({ user }) {
         </Button>
       </nav>
       <main>
+        <Button
+          style={{ paddingBottom: "10px" }}
+          variant="contained"
+          size="large"
+          onClick={() => setShowAll(!showAll)}
+        >
+          {showAll
+            ? "Показать только предсказания, по которым нужно решение"
+            : "Показать все предсказания"}
+        </Button>
         {(function () {
           if (error !== "")
             return <Typography variant="h4">{error}</Typography>;
