@@ -13,7 +13,7 @@ import { useNavigate } from "react-router-dom";
 import prettifyResponseError from "./shared/prettifyResponseError";
 import { Button } from "@mui/material";
 
-function ProbsLineChart({ datapoints, children }) {
+function ProbabilityBaseChart({ datapoints, children }) {
   return (
     <div
       style={{
@@ -102,6 +102,74 @@ const toDisplayableDatapoints = (statistics, granularityLevel) => {
   return result;
 };
 
+export function StatisticsCharts({ datapoints }) {
+  return (
+    <>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <ProbabilityBaseChart datapoints={datapoints}>
+          <YAxis
+            label={{
+              value: "Действительное количество верных ответов (%)",
+              angle: -90,
+              position: "insideLeft",
+            }}
+          />
+          <Line
+            type="monotone"
+            dataKey="probability_quotient"
+            name="Идеальная калибровка"
+            stroke="#ff0000"
+          />
+          <Line
+            type="monotone"
+            dataKey="correct_percent"
+            name="Процент верных ответов"
+            stroke="#0000ff"
+            connectNulls={true}
+          />
+        </ProbabilityBaseChart>
+      </div>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <ProbabilityBaseChart datapoints={datapoints}>
+          <YAxis
+            label={{
+              value: "Количество вопросов",
+              angle: -90,
+              position: "insideLeft",
+            }}
+          />
+          <Line
+            type="monotone"
+            dataKey="total_correct"
+            name="Верно отвечено"
+            stroke="#00aaaa"
+            connectNulls={true}
+          />
+          <Line
+            type="monotone"
+            dataKey="total"
+            name="Всего задано"
+            stroke="#aa00aa"
+            connectNulls={true}
+          />
+        </ProbabilityBaseChart>
+      </div>
+    </>
+  );
+}
+
 export function StatisticsPage({ user }) {
   const [statistics, setStatistics] = React.useState({
     statistics: [],
@@ -128,12 +196,7 @@ export function StatisticsPage({ user }) {
   React.useEffect(() => {
     requestStatistics();
   }, [requestStatistics]);
-
   const [granularity, setGranularity] = React.useState(2);
-  const displayableDatapoints = toDisplayableDatapoints(
-    statistics.statistics,
-    granularity
-  );
 
   const navigate = useNavigate();
 
@@ -160,67 +223,9 @@ export function StatisticsPage({ user }) {
           ][granularity]
         }
       </Button>
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <ProbsLineChart datapoints={displayableDatapoints}>
-          <YAxis
-            label={{
-              value: "Действительное количество верных ответов (%)",
-              angle: -90,
-              position: "insideLeft",
-            }}
-          />
-          <Line
-            type="monotone"
-            dataKey="probability_quotient"
-            name="Идеальная калибровка"
-            stroke="#ff0000"
-          />
-          <Line
-            type="monotone"
-            dataKey="correct_percent"
-            name="Процент верных ответов"
-            stroke="#0000ff"
-            connectNulls={true}
-          />
-        </ProbsLineChart>
-      </div>
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <ProbsLineChart datapoints={displayableDatapoints}>
-          <YAxis
-            label={{
-              value: "Количество вопросов",
-              angle: -90,
-              position: "insideLeft",
-            }}
-          />
-          <Line
-            type="monotone"
-            dataKey="total_correct"
-            name="Верно отвечено"
-            stroke="#00aaaa"
-            connectNulls={true}
-          />
-          <Line
-            type="monotone"
-            dataKey="total"
-            name="Всего задано"
-            stroke="#aa00aa"
-            connectNulls={true}
-          />
-        </ProbsLineChart>
-      </div>
+      <StatisticsCharts
+        datapoints={toDisplayableDatapoints(statistics.statistics, granularity)}
+      />
     </>
   );
 }
