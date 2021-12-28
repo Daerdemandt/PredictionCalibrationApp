@@ -124,9 +124,18 @@ function Home({ selectedUser, setSelectedUser }) {
           <Button
             variant="contained"
             size="large"
-            onClick={() => navigate("/statistics")}
+            onClick={() => navigate("/answers_statistics")}
           >
             Статистика по тренировочным вопросам
+          </Button>
+        </div>
+        <div style={buttonStyle}>
+          <Button
+            variant="contained"
+            size="large"
+            onClick={() => navigate("/history")}
+          >
+            История ответов
           </Button>
         </div>
         <div style={buttonStyle}>
@@ -143,7 +152,7 @@ function Home({ selectedUser, setSelectedUser }) {
           <Button
             variant="contained"
             size="large"
-            onClick={() => navigate("/show_predictions")}
+            onClick={() => navigate("/predictions_statistics")}
           >
             Статистика по прогнозам
           </Button>
@@ -152,9 +161,9 @@ function Home({ selectedUser, setSelectedUser }) {
           <Button
             variant="contained"
             size="large"
-            onClick={() => navigate("/history")}
+            onClick={() => navigate("/show_predictions")}
           >
-            История ответов
+            История прогнозов
           </Button>
         </div>
         <UserManagementPane
@@ -214,8 +223,24 @@ function App() {
           element={<QuestionsPage user={selectedUser} topic="любая" />}
         />
         <Route
-          path="/statistics"
-          element={<StatisticsPage user={selectedUser} />}
+          path="/answers_statistics"
+          element={
+            <StatisticsPage
+              itemName="ответов"
+              requestBaseUrl="/answers_statistics"
+              user={selectedUser}
+            />
+          }
+        />
+        <Route
+          path="/predictions_statistics"
+          element={
+            <StatisticsPage
+              itemName="предсказаний"
+              requestBaseUrl="/predictions_statistics"
+              user={selectedUser}
+            />
+          }
         />
         <Route
           path="/history"

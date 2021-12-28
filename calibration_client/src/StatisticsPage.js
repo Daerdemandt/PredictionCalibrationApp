@@ -170,14 +170,14 @@ export function StatisticsCharts({ itemName, datapoints }) {
   );
 }
 
-export function StatisticsPage({ user }) {
+export function StatisticsPage({ itemName, requestBaseUrl, user }) {
   const [statistics, setStatistics] = React.useState({
     statistics: [],
     error: null,
   });
   const requestStatistics = React.useCallback(async () => {
     try {
-      let url = `/answers_statistics?user_id=${user.user_id}`;
+      let url = `${requestBaseUrl}?user_id=${user.user_id}`;
       const result = await axios.get(url);
       setStatistics({
         statistics: result.data.statistics,
@@ -224,7 +224,7 @@ export function StatisticsPage({ user }) {
         }
       </Button>
       <StatisticsCharts
-        itemName="ответов"
+        itemName={itemName}
         datapoints={toDisplayableDatapoints(statistics.statistics, granularity)}
       />
     </>
