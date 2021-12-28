@@ -102,7 +102,7 @@ const toDisplayableDatapoints = (statistics, granularityLevel) => {
   return result;
 };
 
-export function StatisticsCharts({ datapoints }) {
+export function StatisticsCharts({ itemName, datapoints }) {
   return (
     <>
       <div
@@ -115,7 +115,7 @@ export function StatisticsCharts({ datapoints }) {
         <ProbabilityBaseChart datapoints={datapoints}>
           <YAxis
             label={{
-              value: "Действительное количество верных ответов (%)",
+              value: `Действительное количество верных ${itemName} (%)`,
               angle: -90,
               position: "insideLeft",
             }}
@@ -129,7 +129,7 @@ export function StatisticsCharts({ datapoints }) {
           <Line
             type="monotone"
             dataKey="correct_percent"
-            name="Процент верных ответов"
+            name={`Процент верных ${itemName}`}
             stroke="#0000ff"
             connectNulls={true}
           />
@@ -145,7 +145,7 @@ export function StatisticsCharts({ datapoints }) {
         <ProbabilityBaseChart datapoints={datapoints}>
           <YAxis
             label={{
-              value: "Количество вопросов",
+              value: `Количество ${itemName}`,
               angle: -90,
               position: "insideLeft",
             }}
@@ -153,14 +153,14 @@ export function StatisticsCharts({ datapoints }) {
           <Line
             type="monotone"
             dataKey="total_correct"
-            name="Верно отвечено"
+            name={`Верных ${itemName}`}
             stroke="#00aaaa"
             connectNulls={true}
           />
           <Line
             type="monotone"
             dataKey="total"
-            name="Всего задано"
+            name={`Всего ${itemName}`}
             stroke="#aa00aa"
             connectNulls={true}
           />
@@ -224,6 +224,7 @@ export function StatisticsPage({ user }) {
         }
       </Button>
       <StatisticsCharts
+        itemName="ответов"
         datapoints={toDisplayableDatapoints(statistics.statistics, granularity)}
       />
     </>
