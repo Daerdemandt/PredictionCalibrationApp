@@ -8,7 +8,10 @@ export default function prettifyResponseError(error) {
       case 405:
         return "Ошибка 405; не тот метод запроса";
       default:
-        return error.response.data;
+        const data = error.response.data;
+        if (typeof data === "string" || data instanceof String)
+          return error.response.data;
+        return error.response.data.error;
     }
   } catch (e) {
     return JSON.stringify(error);
