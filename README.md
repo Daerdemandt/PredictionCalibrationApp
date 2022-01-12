@@ -24,18 +24,12 @@ This app allows you to improve your precision in making probablistic estimates w
 
 # Requirements
 
-Frontend:
+### Frontend:
 
-- react 17.0.2
-- react-router-dom 6.0.2
-- react-scripts 4.0.3
-- mui/material 5.2.5
-- mui/lab 5.0.0
-- material-ui/icons 4.11.2
-- axios 0.24.0
-- recharts 2.1.8
+- node 14.1.0+
+- npm 8.3.0+
 
-Backend:
+### Backend:
 
 - python 3.10 (actually 3.8 will probably do just fine)
 - flask 2.0.2
@@ -47,6 +41,7 @@ Backend:
 Frontend:
 ```
 cd calibration_client
+npm ci # first time or after pulling changes to package list
 npm start
 ```
 
