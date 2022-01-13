@@ -17,4 +17,4 @@ if __name__ == "__main__":
     global_app, global_db = init_app()
     Schema = initialize_schema(global_db)
     initialize_request_handlers(global_app, Schema)
-    global_app.run(debug=True)
+    global_app.run(debug=True, host="0.0.0.0")

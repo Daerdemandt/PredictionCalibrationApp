@@ -1,0 +1,18 @@
+version: '3'
+services:
+  webapp:
+    build: ./calibration_client
+    ports:
+      - "${MAIN_PORT:-3000}:3000"
+    volumes:
+      - "./calibration_client:/webapp"
+      - "/webapp/node_modules"
+      - "/webapp/v8-compile-cache-0"
+    environment:
+      - NODE_ENV
+    restart: unless-stopped
+  server:
+    build: ./calibration_backend
+    volumes:
+      - "./calibration_backend:/usr/src/app"
+    restart: unless-stopped

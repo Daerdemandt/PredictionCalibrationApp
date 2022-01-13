@@ -22,32 +22,15 @@ This app allows you to improve your precision in making probablistic estimates w
 ![pic5](pictures_for_readme/pic5.png)
 ![pic6](pictures_for_readme/pic6.png)
 
-# Requirements
-
-### Frontend:
-
-- node 14.1.0+
-- npm 8.3.0+
-
-### Backend:
-
-- python 3.10 (actually 3.8 will probably do just fine)
+# Requirements:
+docker-compose 18
+Docker 18
 
 # Running
+docker-compose up
+docker-compose exec server python recreate_db.py
 
-Frontend:
-```
-cd calibration_client
-npm ci # first time or after pulling changes to package list
-npm start
-```
-
-Backend
-```
-cd calibration_backend
-python recreate_db.py  # only first time
-python calibration_backend.py
-```
+By default app is available on port 3000, you can change that by changing MAIN_PORT env variable or by specifying it in .env file
 
 # TODOs
 
