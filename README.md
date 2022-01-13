@@ -32,9 +32,6 @@ This app allows you to improve your precision in making probablistic estimates w
 ### Backend:
 
 - python 3.10 (actually 3.8 will probably do just fine)
-- flask 2.0.2
-- flask-SQLAlchemy 2.5.1
-- pytest 6.2.5
 
 # Running
 
